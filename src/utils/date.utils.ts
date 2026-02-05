@@ -87,17 +87,21 @@ export const getWeekStartDate = (
   weekNumber: number,
   currentWeek: number = 0
 ): Date => {
-  const challengeStartDate = getNextOccurrenceOfDay(dayOfWeek);
-  const weekStartDate = moment.tz(challengeStartDate, DEFAULT_TIMEZONE);
+  const nextOccurrence = getNextOccurrenceOfDay(dayOfWeek);
+  const weekStartDate = moment.tz(nextOccurrence, DEFAULT_TIMEZONE);
 
   if (currentWeek === 0 || currentWeek === 1) {
     if (weekNumber === 1 || weekNumber === 2) {
-      return challengeStartDate;
+      return nextOccurrence;
     }
     weekStartDate.add((weekNumber - 2) * 7, 'days');
     return weekStartDate.toDate();
   }
 
-  weekStartDate.add((weekNumber - 1) * 7, 'days');
+  if (weekNumber === currentWeek + 1) {
+    return nextOccurrence;
+  }
+  const weeksFromNext = weekNumber - currentWeek - 1;
+  weekStartDate.add(weeksFromNext * 7, 'days');
   return weekStartDate.toDate();
 };
