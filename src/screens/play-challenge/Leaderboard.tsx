@@ -14,8 +14,7 @@ import {
   LoadingCard,
   ProfileIcon,
 } from '../../components/common';
-import { PointWeekCard, WeightWeekCard } from '../../components/play-challenge';
-import { AWARDS } from '../../constants';
+import { BadgesPointsSection, PointWeekCard, WeightWeekCard } from '../../components/play-challenge';
 import { useLeaderboard } from '../../hooks';
 import { useChallengesStore } from '../../store';
 import { COLORS, FONTS } from '../../theme';
@@ -42,12 +41,14 @@ const WeekSection = ({
   currentWeek,
   selectedWeek,
   setSelectedWeek,
+  isWeightLossChallenge,
 }: {
   measureType: MeasureType;
   leaderboardData: LeaderboardEntry[];
   currentWeek: number;
   selectedWeek: number;
   setSelectedWeek: (week: number) => void;
+  isWeightLossChallenge: boolean;
 }) => {
   const goToPreviousWeek = () => {
     if (selectedWeek > 1) {
@@ -119,16 +120,6 @@ const WeekSection = ({
         <Text style={styles.emptyText}>No weight loss data available</Text>
       )}
 
-      {measureType === 'points' && (
-        <View style={styles.awardsContainer}>
-          {AWARDS.map(award => (
-            <View key={award.name} style={styles.awardItem}>
-              <Icon name={award.icon} size={20} color={award.color} />
-              <Text style={styles.awardText}>{award.name}</Text>
-            </View>
-          ))}
-        </View>
-      )}
     </View>
   );
 };
@@ -228,11 +219,11 @@ export const LeaderboardScreen: React.FC = () => {
   const {
     weekLeaderboardData,
     challengeLeaderboardData,
+    isWeightLossChallenge,
     loading,
     fetchLeaderboard,
   } = useLeaderboard(selectedChallenge?.id as string);
 
-  const isProPlan = selectedChallenge?.plan === 'pro';
   const [measureType, setMeasureType] = useState<MeasureType>('points');
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
 
@@ -242,14 +233,14 @@ export const LeaderboardScreen: React.FC = () => {
   }, [selectedWeek, measureType, fetchLeaderboard, isFocused]);
 
   useEffect(() => {
-    if (!isProPlan && measureType === 'weight') {
+    if (!isWeightLossChallenge && measureType === 'weight') {
       setMeasureType('points');
     }
-  }, [isProPlan, measureType]);
+  }, [isWeightLossChallenge, measureType]);
 
   return (
     <View style={styles.container}>
-      {isProPlan && (
+      {isWeightLossChallenge && (
         <View style={styles.toggleContainer}>
           <CustomButton
             text="Points"
@@ -288,16 +279,20 @@ export const LeaderboardScreen: React.FC = () => {
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {weekLeaderboardData && (
             <WeekSection
-              measureType={isProPlan ? measureType : 'points'}
+              measureType={measureType}
               leaderboardData={weekLeaderboardData || []}
               currentWeek={selectedChallenge?.current_week || 1}
               selectedWeek={selectedWeek}
               setSelectedWeek={setSelectedWeek}
+              isWeightLossChallenge={isWeightLossChallenge}
             />
+          )}
+          {measureType === 'points' && (
+            <BadgesPointsSection isWeightLossChallenge={isWeightLossChallenge} />
           )}
           {challengeLeaderboardData && (
             <ChallengeSection
-              measureType={isProPlan ? measureType : 'points'}
+              measureType={measureType}
               currentWeek={selectedChallenge?.current_week || 1}
               challengeDuration={selectedChallenge?.duration || 2}
               leaderboardData={challengeLeaderboardData || []}

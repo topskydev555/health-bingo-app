@@ -45,6 +45,7 @@ export const useLeaderboard = (challengeId: string) => {
   const [challengeLeaderboardData, setChallengeLeaderboardData] = useState<
     LeaderboardEntry[] | null
   >(null);
+  const [isWeightLossChallenge, setIsWeightLossChallenge] = useState(false);
 
   const fetchLeaderboard = useCallback(
     async (weekNumber: number, measureType: 'points' | 'weight' = 'points') => {
@@ -63,6 +64,7 @@ export const useLeaderboard = (challengeId: string) => {
         setChallengeLeaderboardData(
           convertChallengeLeaderboardData(response?.challengeLeaderboard)
         );
+        setIsWeightLossChallenge(response?.challenge?.is_weight_loss_challenge || false);
       } catch (error) {
         setWeekLeaderboardData(null);
         setChallengeLeaderboardData(null);
@@ -76,6 +78,7 @@ export const useLeaderboard = (challengeId: string) => {
   return {
     weekLeaderboardData,
     challengeLeaderboardData,
+    isWeightLossChallenge,
     loading,
     fetchLeaderboard,
   };

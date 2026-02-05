@@ -1,4 +1,5 @@
 export * from './AddCustomCardModal';
+export * from './BadgesPointsSection';
 export * from './BoardReadyBanner';
 export * from './ChallengeDetailsView';
 export * from './ChallengeField';
@@ -19,3 +20,4 @@ export * from './WeightChart';
 export * from './WeightHistory';
 export * from './WeightInput';
 export * from './WeightInputCard';
+

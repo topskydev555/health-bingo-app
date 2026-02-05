@@ -43,9 +43,7 @@ export const BingoCard: React.FC<BingoCardProps> = ({
   disabled = false,
 }) => {
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
 
-  // Animation for mark mode
   useEffect(() => {
     if (mode === 'mark') {
       const pulseAnimation = Animated.loop(
@@ -70,9 +68,8 @@ export const BingoCard: React.FC<BingoCardProps> = ({
       };
     } else {
       pulseAnim.setValue(1);
-      glowAnim.setValue(0);
     }
-  }, [mode, pulseAnim, glowAnim]);
+  }, [mode, pulseAnim]);
 
   const CardWrapper = mode === 'setup' ? TouchableOpacity : Animated.View;
   const cardWrapperProps =
@@ -228,9 +225,7 @@ export const BingoCard: React.FC<BingoCardProps> = ({
   };
 
   return (
-    <>
-      {mode === 'mark' && <Animated.View style={styles.animatedView} />}
-      <CardWrapper {...cardWrapperProps}>
+    <CardWrapper {...cardWrapperProps}>
         <View style={styles.cardWrapper}>
           <View
             style={[
@@ -250,21 +245,10 @@ export const BingoCard: React.FC<BingoCardProps> = ({
           </View>
         </View>
       </CardWrapper>
-    </>
   );
 };
 
 const styles = StyleSheet.create({
-  animatedView: {
-    position: 'absolute',
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary.blue,
-    top: -10,
-    left: -10,
-    zIndex: -1,
-  },
   cardWrapper: {
     position: 'relative',
   },
