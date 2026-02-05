@@ -90,8 +90,9 @@ export const VerifyCodeScreen: React.FC = () => {
             value={verificationCode}
             onChangeText={setVerificationCode}
             inputStyle={styles.input}
-            keyboardType="number-pad"
-            maxLength={6}
+            keyboardType="default"
+            maxLength={24}
+            autoCapitalize="characters"
           />
 
           <CustomButton
