@@ -187,7 +187,7 @@ export const ProfileIcon: React.FC<ProfileIconProps> = ({
             onError={handleImageError}
           />
         ) : (
-          <Text style={[styles.initials, { fontSize: size * 0.4 }]}>
+          <Text style={[styles.initials, { fontSize: size * 0.32 }]}>
             {initialsText?.toUpperCase()}
           </Text>
         )}
