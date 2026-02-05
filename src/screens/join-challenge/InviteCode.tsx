@@ -81,7 +81,7 @@ export const InviteCode: React.FC = () => {
         <View style={styles.inputWrapper}>
           <TextInput
             style={styles.input}
-            placeholder="XXXX-XXXX or paste link here"
+            placeholder="Enter code here"
             placeholderTextColor={COLORS.gray.mediumDark}
             value={code}
             onChangeText={setCode}
