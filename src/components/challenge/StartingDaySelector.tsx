@@ -42,6 +42,8 @@ export const StartingDaySelector: React.FC<Props> = ({
                   styles.dayButtonText,
                   isSelected && styles.dayButtonTextSelected,
                 ]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
               >
                 {day.label}
               </Text>
@@ -91,13 +93,12 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   dayButtonText: {
-    fontFamily: FONTS.family.poppinsSemiBold,
-    fontSize: 13,
+    fontFamily: FONTS.family.poppinsRegular,
+    fontSize: 11,
     color: COLORS.text.primary,
-    fontWeight: FONTS.weight.semiBold,
   },
   dayButtonTextSelected: {
     color: COLORS.primary.white,
-    fontWeight: FONTS.weight.bold,
+    fontFamily: FONTS.family.poppinsMedium,
   },
 });
