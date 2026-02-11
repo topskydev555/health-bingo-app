@@ -259,7 +259,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
             <Text style={styles.text}>
               {isSetupMode
                 ? 'Setup Week ' + selectedWeek + ' Tasks'
-                : "Let's get started with Week " + selectedWeek + ' Bingo'}
+                : "Let's get started with Week " + selectedWeek + ' Health Bingo'}
             </Text>
           </View>
           <BingoBoard
@@ -300,7 +300,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
           onClose={() => {}}
           onLetsGo={handleLetsGo}
           title="Welcome aboard!"
-          subtitle="Week 1 starts now—let's get moving."
+          subtitle="A new week, a fresh start - let's go!"
           buttonText="LET'S GO"
         />
       </View>

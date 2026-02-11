@@ -17,7 +17,7 @@ export const WelcomeModal: React.FC<WelcomeModalProps> = ({
   onClose,
   onLetsGo,
   title = 'Welcome aboard!',
-  subtitle = "Week 1 starts now—let's get moving.",
+  subtitle = "A new week, a fresh start - let's go!",
   buttonText = "LET'S GO",
 }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
