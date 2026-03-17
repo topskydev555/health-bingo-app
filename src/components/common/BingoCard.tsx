@@ -284,10 +284,10 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   text: {
-    fontSize: 10,
+    fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 18,
   },
   badge: {
     position: 'absolute',

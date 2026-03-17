@@ -94,11 +94,11 @@ const styles = StyleSheet.create({
   },
   dayButtonText: {
     fontFamily: FONTS.family.poppinsRegular,
-    fontSize: 11,
+    fontSize: 10,
     color: COLORS.text.primary,
   },
   dayButtonTextSelected: {
     color: COLORS.primary.white,
-    fontFamily: FONTS.family.poppinsMedium,
+    fontFamily: FONTS.family.poppinsRegular,
   },
 });
