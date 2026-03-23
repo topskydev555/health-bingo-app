@@ -4,16 +4,16 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SCREEN_NAMES } from '../../constants/screens';
 import { useUnreadMessages } from '../../hooks';
-import { useChallengesStore } from '../../store';
+import { useChallengesStore, useLastChallengeStore } from '../../store';
 import { COLORS } from '../../theme';
 import { Badge } from '../common/Badge';
 
 type FooterProps = {
   currentRoute: string;
   invitePlayersTabRef?: React.RefObject<
-    React.ElementRef<typeof TouchableOpacity>
+    React.ComponentRef<typeof TouchableOpacity> | null
   >;
-  chatTabRef?: React.RefObject<React.ElementRef<typeof TouchableOpacity>>;
+  chatTabRef?: React.RefObject<React.ComponentRef<typeof TouchableOpacity> | null>;
 };
 
 export const Footer: React.FC<FooterProps> = ({
@@ -24,6 +24,7 @@ export const Footer: React.FC<FooterProps> = ({
   const navigation = useNavigation();
   const { selectedChallenge } = useChallengesStore();
   const { getUnreadCount } = useUnreadMessages();
+  const { setLastTab } = useLastChallengeStore();
 
   const unreadCount = getUnreadCount(selectedChallenge?.id || '');
 
@@ -73,7 +74,10 @@ export const Footer: React.FC<FooterProps> = ({
             key={`${tab.name}-${index}`}
             ref={tabRef}
             style={styles.tab}
-            onPress={() => navigation.navigate(tab.name as never)}
+            onPress={() => {
+              setLastTab(tab.name);
+              navigation.navigate(tab.name as never);
+            }}
             activeOpacity={0.7}
           >
             <View style={styles.iconContainer}>

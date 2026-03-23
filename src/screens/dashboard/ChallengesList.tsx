@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -17,7 +17,7 @@ import {
 } from '../../components/dashboard';
 import { SCREEN_NAMES } from '../../constants';
 import { useUnreadMessages } from '../../hooks';
-import { useChallengesStore } from '../../store';
+import { useChallengesStore, useLastChallengeStore } from '../../store';
 import { COLORS, FONTS } from '../../theme';
 import {
   DashboardStackParamList,
@@ -38,6 +38,9 @@ export const ChallengesListScreen: React.FC = () => {
     selectChallenge,
   } = useChallengesStore();
   const { unreadCounts } = useUnreadMessages();
+  const { lastChallengeId, setLastChallengeId, hasHydrated } = useLastChallengeStore();
+  const hasAutoNavigated = useRef(false);
+  const [readyToRender, setReadyToRender] = useState(false);
 
   const navigation = useNavigation<NavigationProp>();
   const rootNavigation =
@@ -46,6 +49,23 @@ export const ChallengesListScreen: React.FC = () => {
   useEffect(() => {
     fetchChallenges();
   }, []);
+
+  useEffect(() => {
+    if (!hasHydrated || loading) return;
+
+    if (lastChallengeId && !hasAutoNavigated.current) {
+      const lastChallenge = ongoingChallenges.find(ch => ch.id === lastChallengeId);
+      if (lastChallenge) {
+        hasAutoNavigated.current = true;
+        selectChallenge(lastChallenge.id);
+        setReadyToRender(true);
+        rootNavigation.navigate(SCREEN_NAMES.PLAY_CHALLENGE);
+        return;
+      }
+    }
+
+    setReadyToRender(true);
+  }, [hasHydrated, loading]);
 
   const renderArchivedCard = (challenge: any, index: number) => {
     const progress =
@@ -146,6 +166,7 @@ export const ChallengesListScreen: React.FC = () => {
                 isOrganizer={true}
                 unreadCount={unreadCounts[ch.id] || 0}
                 onPress={() => {
+                  setLastChallengeId(ch.id);
                   selectChallenge(ch.id);
                   rootNavigation.navigate(SCREEN_NAMES.PLAY_CHALLENGE);
                 }}
@@ -183,6 +204,16 @@ export const ChallengesListScreen: React.FC = () => {
       </ScrollView>
     );
   };
+
+  if (!readyToRender) {
+    return (
+      <LoadingCard
+        visible={true}
+        message="Loading challenges..."
+        subMessage="Please wait a moment"
+      />
+    );
+  }
 
   return (
     <View style={styles.wrapper}>
