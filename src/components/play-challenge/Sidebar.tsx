@@ -102,7 +102,7 @@ export const Sidebar: React.FC<Props> = ({
               style={styles.scrollContent}
               showsVerticalScrollIndicator={false}
             >
-              {/* Switch Challenges Section */}
+              {/* My Challenges Section */}
               <View style={[styles.section, styles.firstSection]}>
                 <View style={styles.sectionButtonWrapper}>
                   <CustomButton
@@ -117,7 +117,7 @@ export const Sidebar: React.FC<Props> = ({
                         color={COLORS.primary.blue}
                       />
                     }
-                    text="Switch Challenges"
+                    text="My Challenges"
                   />
                   <Icon
                     name="chevron-right"
