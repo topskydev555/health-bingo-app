@@ -225,7 +225,9 @@ export const LeaderboardScreen: React.FC = () => {
   } = useLeaderboard(selectedChallenge?.id as string);
 
   const [measureType, setMeasureType] = useState<MeasureType>('points');
-  const [selectedWeek, setSelectedWeek] = useState<number>(1);
+  const [selectedWeek, setSelectedWeek] = useState<number>(
+    Math.max(1, (selectedChallenge?.current_week || 1) - 1)
+  );
 
   useEffect(() => {
     if (!isFocused) return;
@@ -277,7 +279,7 @@ export const LeaderboardScreen: React.FC = () => {
         />
       ) : (
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-          {weekLeaderboardData && (
+          {weekLeaderboardData && (selectedChallenge?.current_week || 1) > 1 && (
             <WeekSection
               measureType={measureType}
               leaderboardData={weekLeaderboardData || []}

@@ -91,7 +91,11 @@ export const WeighInScreen: React.FC = () => {
           setMeasureExists(false);
         }
       } catch (error) {
-        console.error('Failed to fetch weight data:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        if (!errorMessage.includes('no bingo task')) {
+          console.error('Failed to fetch weight data:', error);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -147,6 +151,8 @@ export const WeighInScreen: React.FC = () => {
         }
 
         showToast('Weight already saved for this week', 'info');
+      } else if (errorMessage.includes('no bingo task')) {
+        showToast('Weight logging opens when challenge starts.', 'error');
       } else {
         showToast('Failed to save weight. Please try again.', 'error');
       }

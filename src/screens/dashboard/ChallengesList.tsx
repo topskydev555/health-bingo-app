@@ -188,7 +188,7 @@ export const ChallengesListScreen: React.FC = () => {
     <View style={styles.wrapper}>
       <DashboardHeader
         title={
-          activeTab === 'ongoing' ? 'Ongoing Challenges' : 'Archived Challenges'
+          activeTab === 'ongoing' ? 'Active Challenges' : 'Completed Challenges'
         }
         action={
           <TouchableOpacity

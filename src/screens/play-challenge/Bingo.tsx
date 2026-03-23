@@ -35,10 +35,7 @@ import { createProgress } from '../../services';
 import { playLetsGoSound } from '../../services/sound.service';
 import { useChallengesStore, useHostTutorialStore } from '../../store';
 import { COLORS, FONTS } from '../../theme';
-import {
-  getNextOccurrenceOfDay,
-  getWeekStartDate,
-} from '../../utils/date.utils';
+import { getNextOccurrenceOfDay, getWeekStartDate } from '../../utils/date.utils';
 
 interface BingoScreenProps {
   invitePlayersTabRef?: React.RefObject<
@@ -148,19 +145,9 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
     return selectedWeek < currentWeek;
   }, [selectedChallenge, selectedWeek, isSetupMode]);
 
-  const getNextWeekStartDate = useMemo(() => {
-    if (!isWaitingForNextWeek || !selectedChallenge?.starting_day_of_week) {
-      return null;
-    }
-    return getNextOccurrenceOfDay(selectedChallenge.starting_day_of_week);
-  }, [isWaitingForNextWeek, selectedChallenge?.starting_day_of_week]);
-
   const weekStartDate = useMemo(() => {
-    if (!selectedChallenge?.starting_day_of_week) {
-      return null;
-    }
+    if (!selectedChallenge?.starting_day_of_week) return null;
     const currentWeek = selectedChallenge.current_week || 0;
-
     return getWeekStartDate(
       selectedChallenge.starting_day_of_week,
       selectedWeek,
@@ -172,15 +159,33 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
     selectedWeek,
   ]);
 
+  // The next occurrence of starting_day_of_week = when the current week ends.
+  // Computed whenever we're on the current active week (not just after completion).
+  const weekEndDate = useMemo(() => {
+    const currentWeek = selectedChallenge?.current_week || 1;
+    const totalWeeks = selectedChallenge?.duration || 12;
+    if (
+      !selectedChallenge?.starting_day_of_week ||
+      isSetupMode ||
+      selectedWeek !== currentWeek ||
+      currentWeek >= totalWeeks
+    ) return null;
+    return getNextOccurrenceOfDay(selectedChallenge.starting_day_of_week);
+  }, [
+    selectedChallenge?.starting_day_of_week,
+    selectedChallenge?.current_week,
+    selectedChallenge?.duration,
+    isSetupMode,
+    selectedWeek,
+  ]);
+
   const shouldShowTutorialValue = shouldShowTutorial();
   const {
     showTutorial,
     setShowTutorial,
     tutorialStep,
-    setTutorialStep,
     tutorialSteps,
     handleNext: handleTutorialNext,
-    challengeStartDate: tutorialStartDate,
   } = useWhatsNextTutorial({
     weekTabBarRef,
     invitePlayersTabRef,
@@ -273,16 +278,19 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
             }}
             disabled={isFinishedWeek}
           />
-          {isWaitingForNextWeek && getNextWeekStartDate && (
+          {!isWaitingForNextWeek && !allCardsCompleted && weekEndDate && (
+            <View style={styles.weekEndCountdown}>
+              <Text style={styles.weekEndLabel}>Time left this week:</Text>
+              <CountdownTimer targetDate={weekEndDate} variant="large" />
+            </View>
+          )}
+          {isWaitingForNextWeek && weekEndDate && (
             <View style={styles.nextWeekCountdown}>
               <Text style={styles.nextWeekTitle}>
                 🎉 Week {selectedWeek} Complete!
               </Text>
               <Text style={styles.nextWeekSubtitle}>Next week starts in:</Text>
-              <CountdownTimer
-                targetDate={getNextWeekStartDate}
-                variant="large"
-              />
+              <CountdownTimer targetDate={weekEndDate} variant="large" />
             </View>
           )}
           {isSetupMode && (
@@ -412,5 +420,23 @@ const styles = StyleSheet.create({
     color: COLORS.primary.white,
     marginBottom: 12,
     opacity: 0.9,
+  },
+  weekEndCountdown: {
+    marginTop: 16,
+    marginBottom: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: COLORS.primary.white + '15',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.primary.white + '30',
+    alignItems: 'center',
+  },
+  weekEndLabel: {
+    fontSize: 13,
+    fontFamily: FONTS.family.poppinsRegular,
+    color: COLORS.primary.white,
+    marginBottom: 6,
+    opacity: 0.85,
   },
 });

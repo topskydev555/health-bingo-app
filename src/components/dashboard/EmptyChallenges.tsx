@@ -59,7 +59,7 @@ export const EmptyChallenges: React.FC<Props> = ({
         </>
       ) : (
         <View style={styles.archivedContainer}>
-          <Text style={styles.archivedTitle}>No Archived Challenges</Text>
+          <Text style={styles.archivedTitle}>No Completed Challenges</Text>
           <Text style={styles.archivedSubtitle}>
             Your completed challenges will appear here
           </Text>
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'stretch',
   },
   transitionIcon: {
     position: 'absolute',

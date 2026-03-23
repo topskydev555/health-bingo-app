@@ -85,23 +85,17 @@ export const formatCountdown = (
 export const getWeekStartDate = (
   dayOfWeek: string,
   weekNumber: number,
-  currentWeek: number = 0
+  currentWeek: number
 ): Date => {
-  const nextOccurrence = getNextOccurrenceOfDay(dayOfWeek);
-  const weekStartDate = moment.tz(nextOccurrence, DEFAULT_TIMEZONE);
+  const today = moment.tz(DEFAULT_TIMEZONE).startOf('day');
 
-  if (currentWeek === 0 || currentWeek === 1) {
-    if (weekNumber === 1 || weekNumber === 2) {
-      return nextOccurrence;
-    }
-    weekStartDate.add((weekNumber - 2) * 7, 'days');
-    return weekStartDate.toDate();
-  }
+  const targetDayIndex = getDayOfWeekIndex(dayOfWeek);
+  const currentDayIndex = today.day();
 
-  if (weekNumber === currentWeek + 1) {
-    return nextOccurrence;
-  }
-  const weeksFromNext = weekNumber - currentWeek - 1;
-  weekStartDate.add(weeksFromNext * 7, 'days');
-  return weekStartDate.toDate();
+  // Days since the most recent occurrence of the target day (0 if today is the target day)
+  const daysSinceLast = (currentDayIndex - targetDayIndex + 7) % 7;
+  const mostRecentOccurrence = today.clone().subtract(daysSinceLast, 'days');
+
+  const diff = weekNumber - currentWeek;
+  return mostRecentOccurrence.add(diff * 7, 'days').toDate();
 };

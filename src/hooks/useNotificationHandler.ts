@@ -1,5 +1,5 @@
 import { getInitialNotification, onMessage, onNotificationOpenedApp } from '@react-native-firebase/messaging';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { SCREEN_NAMES } from '../constants/screens';
 import { navigationRef } from '../navigation/AppNavigator';
 import {
@@ -12,6 +12,13 @@ import { getMessagingSafe } from '../utils/firebase';
 export const useNotificationHandler = () => {
   const { ongoingChallenges, selectChallenge, selectedChallenge } = useChallengesStore();
 
+  // Keep a ref so isViewingChatForChallenge always reads the latest value
+  // without putting selectedChallenge in the main effect's dependency array.
+  const selectedChallengeRef = useRef(selectedChallenge);
+  useEffect(() => {
+    selectedChallengeRef.current = selectedChallenge;
+  }, [selectedChallenge]);
+
   useEffect(() => {
     let unsubscribeForeground: (() => void) | null = null;
     let unsubscribeNotificationOpened: (() => void) | null = null;
@@ -23,7 +30,7 @@ export const useNotificationHandler = () => {
       }
 
     const isViewingChatForChallenge = (challengeId: string): boolean => {
-      if (!navigationRef.isReady() || !selectedChallenge) {
+      if (!navigationRef.isReady() || !selectedChallengeRef.current) {
         return false;
       }
 
@@ -44,7 +51,7 @@ export const useNotificationHandler = () => {
         const currentTabRoute = playChallengeState.routes[playChallengeState.index];
         const isOnChatScreen = currentTabRoute?.name === SCREEN_NAMES._PLAY_CHALLENGE.CHAT;
 
-        const isMatchingChallenge = selectedChallenge.id === challengeId;
+        const isMatchingChallenge = selectedChallengeRef.current.id === challengeId;
 
         return isOnChatScreen && isMatchingChallenge;
       } catch (error) {
@@ -58,14 +65,18 @@ export const useNotificationHandler = () => {
       }
 
       const { challenge_id } = data;
-      if (challenge_id && navigationRef.isReady()) {
-        selectChallenge(challenge_id);
-        setTimeout(() => {
-          (navigationRef as any).navigate(SCREEN_NAMES.PLAY_CHALLENGE, {
-            screen: SCREEN_NAMES._PLAY_CHALLENGE.CHAT,
-          });
-        }, 1000);
+      if (!challenge_id || !navigationRef.isReady()) {
+        return;
       }
+
+      // Select the challenge and navigate in the same tick so there is no
+      // window where the store is updated but navigation hasn't happened yet,
+      // and so the effect re-run caused by selectChallenge doesn't race with
+      // a pending setTimeout.
+      selectChallenge(challenge_id);
+      (navigationRef as any).navigate(SCREEN_NAMES.PLAY_CHALLENGE, {
+        screen: SCREEN_NAMES._PLAY_CHALLENGE.CHAT,
+      });
     };
 
     const handleInitialNotification = async () => {
@@ -174,6 +185,5 @@ export const useNotificationHandler = () => {
       unsubscribeNotificationOpened();
       }
     };
-  }, [ongoingChallenges, selectChallenge, selectedChallenge]);
+  }, [ongoingChallenges, selectChallenge]); // selectedChallenge intentionally excluded — accessed via ref
 };
-
