@@ -26,7 +26,7 @@ import {
 
 type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
 
-type TabType = 'ongoing' | 'archived';
+type TabType = 'ongoing' | 'completed';
 
 export const ChallengesListScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('ongoing');
@@ -67,12 +67,20 @@ export const ChallengesListScreen: React.FC = () => {
     setReadyToRender(true);
   }, [hasHydrated, loading]);
 
-  const renderArchivedCard = (challenge: any, index: number) => {
+  const renderCompletedCard = (challenge: any) => {
     const progress =
       (challenge.current_week ?? 0) / Math.max(1, challenge.duration);
 
     return (
-      <View key={challenge.id} style={styles.archivedCard}>
+      <TouchableOpacity
+        key={challenge.id}
+        style={styles.archivedCard}
+        activeOpacity={0.7}
+        onPress={() => {
+          selectChallenge(challenge.id);
+          rootNavigation.navigate(SCREEN_NAMES.PLAY_CHALLENGE);
+        }}
+      >
         <View style={styles.cardHeader}>
           <View style={styles.titleContainer}>
             <Text style={styles.challengeTitle}>{challenge.title}</Text>
@@ -94,9 +102,8 @@ export const ChallengesListScreen: React.FC = () => {
               ]}
             />
           </View>
-          <Text style={styles.lockIcon}>🔒</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -198,9 +205,7 @@ export const ChallengesListScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {archivedChallenges.map((challenge, index) =>
-          renderArchivedCard(challenge, index)
-        )}
+        {archivedChallenges.map(challenge => renderCompletedCard(challenge))}
       </ScrollView>
     );
   };
@@ -224,11 +229,11 @@ export const ChallengesListScreen: React.FC = () => {
         action={
           <TouchableOpacity
             onPress={() =>
-              setActiveTab(activeTab === 'ongoing' ? 'archived' : 'ongoing')
+              setActiveTab(activeTab === 'ongoing' ? 'completed' : 'ongoing')
             }
           >
             <Text style={{ color: COLORS.primary.green, marginRight: 4 }}>
-              {activeTab === 'ongoing' ? 'View Archived' : 'View Ongoing'}
+              {activeTab === 'ongoing' ? 'View Completed' : 'View Ongoing'}
             </Text>
           </TouchableOpacity>
         }
@@ -361,9 +366,5 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#7ED957',
     borderRadius: 4,
-  },
-  lockIcon: {
-    fontSize: 16,
-    color: '#FF69B4',
   },
 });

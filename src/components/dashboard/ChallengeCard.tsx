@@ -18,7 +18,7 @@ type Props = {
   currentWeek: number;
   totalWeeks: number;
   progress: number; // 0..1
-  status: 'active' | 'pending' | 'in_active' | 'finished' | 'unpaid';
+  status: 'active' | 'pending' | 'in_active' | 'finished' | 'unpaid' | 'finishing';
   categoryName?: string;
   startingDayOfWeek?: string;
   containerStyle?: ViewStyle;
@@ -52,6 +52,8 @@ export const ChallengeCard: React.FC<Props> = ({
       return <View style={[styles.statusBadge, styles.pendingBadge]} />;
     } else if (status === 'unpaid') {
       return <View style={[styles.statusBadge, styles.unpaidBadge]} />;
+    } else if (status === 'finishing') {
+      return <View style={[styles.statusBadge, styles.finishingBadge]} />;
     }
     return null;
   };
@@ -142,6 +144,14 @@ export const ChallengeCard: React.FC<Props> = ({
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { width: `${percent * 100}%` }]} />
       </View>
+
+      {status === 'finishing' && (
+        <View style={styles.finishingBanner}>
+          <Text style={styles.finishingBannerText}>
+            Your {title} will move to Completed soon.
+          </Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -195,6 +205,21 @@ const styles = StyleSheet.create({
   },
   unpaidBadge: {
     backgroundColor: '#FF4444', // Red for unpaid
+  },
+  finishingBadge: {
+    backgroundColor: '#9B59B6', // Purple for finishing
+  },
+  finishingBanner: {
+    marginTop: 8,
+    backgroundColor: '#F3E8FF',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  finishingBannerText: {
+    fontSize: 11,
+    fontFamily: FONTS.family.poppinsRegular,
+    color: '#7B2D8B',
   },
   statusPill: {},
   statusText: { fontSize: 12 },

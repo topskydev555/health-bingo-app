@@ -50,7 +50,11 @@ export const useChallengesStore = create<ChallengesStore>(set => ({
       selectedChallenge:
         state.ongoingChallenges.find(
           (challenge: Challenge) => challenge.id === challengeId
-        ) ?? null,
+        ) ||
+        state.archivedChallenges.find(
+          (challenge: Challenge) => challenge.id === challengeId
+        ) ||
+        null,
     }));
   },
   fetchChallenges: async (silent = false) => {
@@ -64,7 +68,8 @@ export const useChallengesStore = create<ChallengesStore>(set => ({
           challenge.status === 'active' ||
           challenge.status === 'pending' ||
           challenge.status === 'unpaid' ||
-          challenge.status === 'inactive'
+          challenge.status === 'inactive' ||
+          challenge.status === 'finishing'
       );
       const archivedChallenges = challenges.filter(
         (challenge: Challenge) => challenge.status === 'finish'
