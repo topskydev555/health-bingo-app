@@ -108,5 +108,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+  <key>NSApplePayMerchantIdentifiers</key>
+  <array>
+    <string>merchant.com.healthbingo.app</string>
+  </array>
 </dict>
 </plist>

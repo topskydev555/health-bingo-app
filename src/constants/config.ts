@@ -4,6 +4,7 @@ export const API_BASE_URL = 'https://healthbingo-backend-dev-69f9daf23457.heroku
 // Stripe Configuration
 export const STRIPE_PUBLISHABLE_KEY =
   'pk_test_51RplwjRiaGz7dIMQNf4pKP7nYlatsXkTvglRahBsy0qPWv1YvncLsZzmogj2sPYfbDM7ivToYd57kNYH0DaR4Xp500KoW9TDuh'; // Replace with your actual Stripe publishable key
+export const STRIPE_MERCHANT_IDENTIFIER = 'merchant.com.healthbingo.app';
 
 // Google Sign-In Configuration
 export const GOOGLE_WEB_CLIENT_ID =
