@@ -69,6 +69,14 @@ export const PayChallenge: React.FC = () => {
       defaultBillingDetails: {
         name: 'Challenge Payment',
       },
+      applePay: {
+        merchantCountryCode: 'AU',
+      },
+      googlePay: {
+        merchantCountryCode: 'AU',
+        testEnv: __DEV__,
+        currencyCode: 'usd',
+      },
     });
 
     if (error) {
@@ -125,8 +133,7 @@ export const PayChallenge: React.FC = () => {
           console.log('Stripe Payment Error:', error);
           if (error.code !== 'Canceled') {
             showToast(
-              `Payment failed: ${
-                error.message || error.code
+              `Payment failed: ${error.message || error.code
               }. Please try again.`,
               'error'
             );

@@ -73,6 +73,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       defaultBillingDetails: {
         name: 'Challenge Payment',
       },
+      applePay: {
+        merchantCountryCode: 'AU',
+      },
+      googlePay: {
+        merchantCountryCode: 'AU',
+        testEnv: __DEV__,
+        currencyCode: 'usd',
+      },
     });
 
     if (error) {
@@ -140,8 +148,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         if (error) {
           if (error.code !== 'Canceled') {
             showToast(
-              `Payment failed: ${
-                error.message || error.code
+              `Payment failed: ${error.message || error.code
               }. Please try again.`,
               'error'
             );
