@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -28,6 +28,8 @@ type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
 
 type TabType = 'ongoing' | 'completed';
 
+let hasAutoNavigated = false;
+
 export const ChallengesListScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('ongoing');
   const {
@@ -39,7 +41,6 @@ export const ChallengesListScreen: React.FC = () => {
   } = useChallengesStore();
   const { unreadCounts } = useUnreadMessages();
   const { lastChallengeId, setLastChallengeId, hasHydrated } = useLastChallengeStore();
-  const hasAutoNavigated = useRef(false);
   const [readyToRender, setReadyToRender] = useState(false);
 
   const navigation = useNavigation<NavigationProp>();
@@ -53,10 +54,10 @@ export const ChallengesListScreen: React.FC = () => {
   useEffect(() => {
     if (!hasHydrated || loading) return;
 
-    if (lastChallengeId && !hasAutoNavigated.current) {
+    if (lastChallengeId && !hasAutoNavigated) {
       const lastChallenge = ongoingChallenges.find(ch => ch.id === lastChallengeId);
       if (lastChallenge) {
-        hasAutoNavigated.current = true;
+        hasAutoNavigated = true;
         selectChallenge(lastChallenge.id);
         setReadyToRender(true);
         rootNavigation.navigate(SCREEN_NAMES.PLAY_CHALLENGE);
