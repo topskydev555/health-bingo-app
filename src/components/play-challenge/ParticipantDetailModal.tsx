@@ -35,6 +35,7 @@ export const ParticipantDetailModal: React.FC<ParticipantDetailModalProps> = ({
   const { selectedChallenge } = useChallengesStore();
   const [removing, setRemoving] = useState(false);
 
+  const isFinished = selectedChallenge?.status === 'finish' || selectedChallenge?.status === 'finishing';
 
   const handleRemoveParticipant = async () => {
     if (!participant) return;
@@ -138,7 +139,7 @@ export const ParticipantDetailModal: React.FC<ParticipantDetailModalProps> = ({
         <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
           <Text style={styles.cancelButtonText}>Close</Text>
         </TouchableOpacity>
-        {!participant.is_organizer && (
+        {!participant.is_organizer && !isFinished && (
           <TouchableOpacity
             style={[
               styles.removeParticipantButton,

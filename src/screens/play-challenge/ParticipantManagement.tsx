@@ -37,6 +37,7 @@ export interface Participant {
 export const ParticipantManagementScreen: React.FC = () => {
   const { selectedChallenge } = useChallengesStore();
   const isFocused = useIsFocused();
+  const isFinished = selectedChallenge?.status === 'finish' || selectedChallenge?.status === 'finishing';
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
   const [showInviteModal, setShowInviteModal] = useState(false);
@@ -120,14 +121,16 @@ export const ParticipantManagementScreen: React.FC = () => {
         )}
       </ScrollView>
 
-      <View style={styles.inviteButtonContainer}>
-        <TouchableOpacity
-          style={styles.inviteMoreButton}
-          onPress={() => setShowInviteModal(true)}
-        >
-          <Text style={styles.inviteMoreButtonText}>Invite More</Text>
-        </TouchableOpacity>
-      </View>
+      {!isFinished && (
+        <View style={styles.inviteButtonContainer}>
+          <TouchableOpacity
+            style={styles.inviteMoreButton}
+            onPress={() => setShowInviteModal(true)}
+          >
+            <Text style={styles.inviteMoreButtonText}>Invite More</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <InviteModal
         participants={participants}

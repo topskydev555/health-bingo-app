@@ -29,6 +29,7 @@ interface MeasureData {
 export const WeighInScreen: React.FC = () => {
   const { selectedChallenge } = useChallengesStore();
   const { showToast } = useToast();
+  const isFinished = selectedChallenge?.status === 'finish' || selectedChallenge?.status === 'finishing';
   const [weight, setWeight] = useState('100');
   const [weightHistory, setWeightHistory] = useState<WeightEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -183,6 +184,7 @@ export const WeighInScreen: React.FC = () => {
           weight={weight}
           measureExists={measureExists}
           isSaving={isSaving}
+          disabled={isFinished}
           onWeightChange={setWeight}
           onIncrement={handleIncrement}
           onDecrement={handleDecrement}

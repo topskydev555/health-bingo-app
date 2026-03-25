@@ -30,6 +30,7 @@ export const SettingsScreen: React.FC = () => {
   });
 
   const isOrganizer = selectedChallenge?.is_organizer;
+  const isFinished = selectedChallenge?.status === 'finish' || selectedChallenge?.status === 'finishing';
   const category = categories?.find(
     cat => cat.id === selectedChallenge?.category_id
   );
@@ -163,7 +164,7 @@ export const SettingsScreen: React.FC = () => {
               categoryName={category?.name}
             />
 
-            {isOrganizer && (
+            {isOrganizer && !isFinished && (
               <View style={styles.buttonGroup}>
                 {selectedChallenge?.status === 'unpaid' ? (
                   <>

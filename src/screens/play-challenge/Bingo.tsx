@@ -50,6 +50,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
 }) => {
   const { selectedChallenge } = useChallengesStore();
   const { setWhatsNextTutorialCompleted } = useHostTutorialStore();
+  const isFinished = selectedChallenge?.status === 'finish' || selectedChallenge?.status === 'finishing';
   const isFocused = useIsFocused();
   const weekTabBarRef = useRef<View>(null);
 
@@ -276,7 +277,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
             onAllCardsCheckedClick={() => {
               setShowCelebrationModal(true);
             }}
-            disabled={isFinishedWeek}
+            disabled={isFinishedWeek || isFinished}
           />
           {!isWaitingForNextWeek && !allCardsCompleted && weekEndDate && (
             <View style={styles.weekEndCountdown}>
@@ -293,7 +294,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
               <CountdownTimer targetDate={weekEndDate} variant="large" />
             </View>
           )}
-          {isSetupMode && (
+          {isSetupMode && !isFinished && (
             <SetupModeActions
               onAddCustom={() => setShowAddCustomModal(true)}
               onReset={handleResetTaskSetup}

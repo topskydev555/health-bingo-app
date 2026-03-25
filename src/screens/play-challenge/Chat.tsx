@@ -30,6 +30,7 @@ export const ChatScreen: React.FC = () => {
   const { user } = useAuthStore();
   const { showToast } = useToast();
   const challengeId = selectedChallenge?.id;
+  const isFinished = selectedChallenge?.status === 'finish'
   const { messages, loading, hasMore, fetchMore, send, sending } = useMessages({
     challengeId,
     pageSize: 20,
@@ -268,47 +269,53 @@ export const ChatScreen: React.FC = () => {
           contentContainerStyle={styles.listContent}
         />
       </View>
-      <View style={styles.inputBar}>
-        {selectedImage && (
-          <View style={styles.selectedImageContainer}>
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.selectedImage}
-              resizeMode="cover"
-            />
-            <TouchableOpacity
-              style={styles.removeImageButton}
-              onPress={() => setSelectedImage(null)}
-            >
-              <Text style={styles.removeImageText}>×</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        <TouchableOpacity
-          onPress={handleImagePicker}
-          style={styles.imagePickerButton}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.imagePickerText}>📷</Text>
-        </TouchableOpacity>
-        <TextInput
-          ref={inputRef}
-          style={styles.textInput}
-          placeholder="Type a message"
-          placeholderTextColor={COLORS.gray.mediumDark}
-          value={text}
-          onChangeText={setText}
-          multiline
-        />
-        <TouchableOpacity
-          onPress={handleSend}
-          activeOpacity={0.8}
-          disabled={!canSend}
-          style={[styles.sendButton, !canSend && styles.sendDisabled]}
-        >
-          <MaterialIcons name="send" size={20} color={COLORS.primary.white} />
-        </TouchableOpacity>
-      </View>
+      {isFinished ? (
+        <View style={styles.finishedBar}>
+          <Text style={styles.finishedBarText}>This challenge has ended. Chat is read-only.</Text>
+        </View>
+      ) : (
+        <View style={styles.inputBar}>
+          {selectedImage && (
+            <View style={styles.selectedImageContainer}>
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.selectedImage}
+                resizeMode="cover"
+              />
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={() => setSelectedImage(null)}
+              >
+                <Text style={styles.removeImageText}>×</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <TouchableOpacity
+            onPress={handleImagePicker}
+            style={styles.imagePickerButton}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.imagePickerText}>📷</Text>
+          </TouchableOpacity>
+          <TextInput
+            ref={inputRef}
+            style={styles.textInput}
+            placeholder="Type a message"
+            placeholderTextColor={COLORS.gray.mediumDark}
+            value={text}
+            onChangeText={setText}
+            multiline
+          />
+          <TouchableOpacity
+            onPress={handleSend}
+            activeOpacity={0.8}
+            disabled={!canSend}
+            style={[styles.sendButton, !canSend && styles.sendDisabled]}
+          >
+            <MaterialIcons name="send" size={20} color={COLORS.primary.white} />
+          </TouchableOpacity>
+        </View>
+      )}
       <UserIntroductionModal
         visible={isModalVisible}
         user={selectedUser}
@@ -424,6 +431,19 @@ const styles = StyleSheet.create({
   timeTextMe: {
     color: COLORS.gray.mediumDark,
     opacity: 0.7,
+  },
+  finishedBar: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: COLORS.gray.veryLight,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.gray.lightMedium,
+    alignItems: 'center',
+  },
+  finishedBarText: {
+    fontSize: 13,
+    fontFamily: FONTS.family.poppinsRegular,
+    color: COLORS.gray.mediumDark,
   },
   inputBar: {
     flexDirection: 'row',

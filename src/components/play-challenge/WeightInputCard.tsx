@@ -14,6 +14,7 @@ interface WeightInputCardProps {
   weight: string;
   measureExists: boolean;
   isSaving: boolean;
+  disabled?: boolean;
   onWeightChange: (weight: string) => void;
   onIncrement: () => void;
   onDecrement: () => void;
@@ -25,6 +26,7 @@ export const WeightInputCard: React.FC<WeightInputCardProps> = ({
   weight,
   measureExists,
   isSaving,
+  disabled = false,
   onWeightChange,
   onIncrement,
   onDecrement,
@@ -39,7 +41,7 @@ export const WeightInputCard: React.FC<WeightInputCardProps> = ({
         <TextInput
           style={[
             styles.weightInput,
-            measureExists && styles.weightInputDisabled,
+            (measureExists || disabled) && styles.weightInputDisabled,
           ]}
           value={weight}
           onChangeText={onWeightChange}
@@ -52,18 +54,18 @@ export const WeightInputCard: React.FC<WeightInputCardProps> = ({
           autoCapitalize="none"
           multiline={false}
           numberOfLines={1}
-          editable={!measureExists}
+          editable={!measureExists && !disabled}
         />
         <View style={styles.controlsContainer}>
           <TouchableOpacity
             onPress={onIncrement}
             style={styles.controlButton}
-            disabled={measureExists}
+            disabled={measureExists || disabled}
           >
             <Text
               style={[
                 styles.controlText,
-                measureExists && styles.controlTextDisabled,
+                (measureExists || disabled) && styles.controlTextDisabled,
               ]}
             >
               ▲
@@ -72,12 +74,12 @@ export const WeightInputCard: React.FC<WeightInputCardProps> = ({
           <TouchableOpacity
             onPress={onDecrement}
             style={styles.controlButton}
-            disabled={measureExists}
+            disabled={measureExists || disabled}
           >
             <Text
               style={[
                 styles.controlText,
-                measureExists && styles.controlTextDisabled,
+                (measureExists || disabled) && styles.controlTextDisabled,
               ]}
             >
               ▼
@@ -90,10 +92,10 @@ export const WeightInputCard: React.FC<WeightInputCardProps> = ({
       <TouchableOpacity
         style={[
           styles.saveButton,
-          (isSaving || measureExists) && styles.saveButtonDisabled,
+          (isSaving || measureExists || disabled) && styles.saveButtonDisabled,
         ]}
         onPress={onSave}
-        disabled={isSaving || measureExists}
+        disabled={isSaving || measureExists || disabled}
       >
         {isSaving ? (
           <ActivityIndicator color="#FFFFFF" />
