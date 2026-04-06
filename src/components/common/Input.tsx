@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
   TextInput,
   TextInputProps,
   TextStyle,
+  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../theme';
 
 type InputProps = {
@@ -41,11 +43,29 @@ export const Input: React.FC<InputProps> = ({
   maxLength,
   autoCapitalize = 'none',
 }) => {
-  const renderValidationIcon = () => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const renderRightIcon = () => {
+    if (secureTextEntry) {
+      return (
+        <TouchableOpacity
+          style={styles.rightIcon}
+          onPress={() => setPasswordVisible(prev => !prev)}
+          disabled={disabled}
+        >
+          <MaterialIcons
+            name={passwordVisible ? 'visibility' : 'visibility-off'}
+            size={20}
+            color={COLORS.gray.mediumDark}
+          />
+        </TouchableOpacity>
+      );
+    }
+
     if (!showValidation || isValid === undefined) return null;
 
     return (
-      <View style={styles.validationIcon}>
+      <View style={styles.rightIcon}>
         <Text
           style={[
             styles.iconText,
@@ -66,6 +86,8 @@ export const Input: React.FC<InputProps> = ({
           style={[
             styles.input,
             inputStyle,
+            (secureTextEntry || (showValidation && isValid !== undefined)) &&
+              styles.inputWithIcon,
             showValidation &&
               isValid !== undefined && {
                 borderColor: isValid
@@ -78,12 +100,12 @@ export const Input: React.FC<InputProps> = ({
           value={value}
           onChangeText={onChangeText}
           editable={!disabled}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={secureTextEntry && !passwordVisible}
           keyboardType={keyboardType}
           maxLength={maxLength}
           autoCapitalize={autoCapitalize}
         />
-        {renderValidationIcon()}
+        {renderRightIcon()}
       </View>
     </>
   );
@@ -97,10 +119,13 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
   },
+  inputWithIcon: {
+    paddingRight: 44,
+  },
   label: {
     marginBottom: 8,
   },
-  validationIcon: {
+  rightIcon: {
     position: 'absolute',
     right: 12,
     top: '50%',
