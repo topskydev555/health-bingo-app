@@ -191,13 +191,13 @@ export const PayChallenge: React.FC = () => {
               {isValidatePromoCode ? (
                 <>
                   <Text style={styles.originalPrice}>
-                    ${((planDetails?.price ?? 0) / 100).toFixed(2)}
+                    ${((planDetails?.price ?? 0) / 100).toFixed(2)} USD
                   </Text>
-                  <Text style={styles.discountedPrice}>$0.00</Text>
+                  <Text style={styles.discountedPrice}>$0.00 USD</Text>
                 </>
               ) : (
                 <Text style={styles.planPrice}>
-                  ${((planDetails?.price ?? 0) / 100).toFixed(2)}
+                  ${((planDetails?.price ?? 0) / 100).toFixed(2)} USD
                 </Text>
               )}
             </View>

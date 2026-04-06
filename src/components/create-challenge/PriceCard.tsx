@@ -42,7 +42,7 @@ export const PriceCard: React.FC<PriceCardProps> = ({
     >
       {/* Price in right-top corner */}
       <View style={styles.priceContainer}>
-        <Text style={styles.price}>${price}</Text>
+        <Text style={styles.price}>${price} USD</Text>
       </View>
 
       <Text style={[styles.title, { color: titleColor }]}>{title}</Text>

@@ -220,16 +220,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   $
                   {planDetails?.price
                     ? (planDetails.price / 100).toFixed(2)
-                    : '0.00'}
+                    : '0.00'}{' '}
+                  USD
                 </Text>
-                <Text style={styles.discountedPrice}>$0.00</Text>
+                <Text style={styles.discountedPrice}>$0.00 USD</Text>
               </>
             ) : (
               <Text style={styles.planPrice}>
                 $
                 {planDetails?.price
                   ? (planDetails.price / 100).toFixed(2)
-                  : '0.00'}
+                  : '0.00'}{' '}
+                USD
               </Text>
             )}
           </View>
