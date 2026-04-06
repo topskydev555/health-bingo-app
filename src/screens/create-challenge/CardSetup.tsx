@@ -25,7 +25,7 @@ import { BingoCard } from '../../types';
 
 export const CardSetup: React.FC = () => {
   const navigation = useNavigation();
-  const { bingoCards, setBingoCards, cardSize, categoryId } = useCreateStore();
+  const { bingoCards, setBingoCards, cardSize, categoryId, plan } = useCreateStore();
   const { cards, loading } = useCards(categoryId as string);
   const [showAddCustomModal, setShowAddCustomModal] = useState(false);
 
@@ -303,20 +303,22 @@ export const CardSetup: React.FC = () => {
                 firstCardRef={firstCardRef}
                 progressSectionRef={progressSectionRef}
               />
-              <CustomButton
-                text="Add Custom Task"
-                icon={
-                  <MaterialIcons
-                    name="add"
-                    size={24}
-                    color={COLORS.primary.white}
-                  />
-                }
-                onPress={() => setShowAddCustomModal(true)}
-                variant="primary"
-                buttonStyle={styles.addCustomButton}
-                textStyle={styles.addCustomButtonText}
-              />
+              {plan !== 'free' && (
+                <CustomButton
+                  text="Add Custom Task"
+                  icon={
+                    <MaterialIcons
+                      name="add"
+                      size={24}
+                      color={COLORS.primary.white}
+                    />
+                  }
+                  onPress={() => setShowAddCustomModal(true)}
+                  variant="primary"
+                  buttonStyle={styles.addCustomButton}
+                  textStyle={styles.addCustomButtonText}
+                />
+              )}
             </ScrollView>
 
             <Footer>
