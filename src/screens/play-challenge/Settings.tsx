@@ -13,7 +13,7 @@ import { useChallengesStore } from '../../store';
 import { Challenge } from '../../types/challenge.type';
 
 export const SettingsScreen: React.FC = () => {
-  const { selectedChallenge, selectChallenge, setOngoingChallenges } =
+  const { selectedChallenge, selectChallenge, setActiveChallenges } =
     useChallengesStore();
   const { categories } = useCategories();
   const { getPlanById } = usePlans();
@@ -69,7 +69,7 @@ export const SettingsScreen: React.FC = () => {
         }),
       });
 
-      setOngoingChallenges((prev: Challenge[]) => {
+      setActiveChallenges((prev: Challenge[]) => {
         return prev.map((challenge: Challenge) =>
           challenge.id === selectedChallenge?.id
             ? { ...challenge, ...response }

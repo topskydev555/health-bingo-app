@@ -3,7 +3,7 @@ import { subscribeToChallengeUpdate } from '../services/firebase-chat.service';
 import { useAuthStore, useChallengesStore } from '../store';
 
 export const useChallengeUpdates = () => {
-  const { ongoingChallenges, fetchChallenges } = useChallengesStore();
+  const { activeChallenges, fetchChallenges } = useChallengesStore();
   const { user } = useAuthStore();
   const unsubscribeRefs = useRef<Record<string, (() => void) | null>>({});
   const fetchChallengesRef = useRef(fetchChallenges);
@@ -20,7 +20,7 @@ export const useChallengeUpdates = () => {
       return;
     }
 
-    ongoingChallenges.forEach((challenge) => {
+    activeChallenges.forEach((challenge) => {
       const challengeId = challenge.id;
 
       if (unsubscribeRefs.current[challengeId]) {
@@ -67,7 +67,7 @@ export const useChallengeUpdates = () => {
     });
 
     Object.keys(unsubscribeRefs.current).forEach((challengeId) => {
-      const stillExists = ongoingChallenges.some((ch) => ch.id === challengeId);
+      const stillExists = activeChallenges.some((ch) => ch.id === challengeId);
       if (!stillExists) {
         unsubscribeRefs.current[challengeId]?.();
         delete unsubscribeRefs.current[challengeId];
@@ -91,6 +91,6 @@ export const useChallengeUpdates = () => {
       unsubscribeRefs.current = {};
       debounceTimers.current = {};
     };
-  }, [ongoingChallenges, user?.id]);
+  }, [activeChallenges, user?.id]);
 };
 

@@ -3,7 +3,7 @@ import { getUnreadMessageCount } from '../services/firebase-chat.service';
 import { useAuthStore, useChallengesStore, useLastSeenStore } from '../store';
 
 export const useUnreadMessages = () => {
-  const { ongoingChallenges } = useChallengesStore();
+  const { activeChallenges } = useChallengesStore();
   const { user } = useAuthStore();
   const lastSeenTimes = useLastSeenStore(state => state.lastSeenTimes);
 
@@ -18,7 +18,7 @@ export const useUnreadMessages = () => {
     }
 
     // Subscribe to unread counts for each ongoing challenge
-    ongoingChallenges.forEach((challenge) => {
+    activeChallenges.forEach((challenge) => {
       const challengeId = challenge.id;
 
       // Clean up existing subscription if any
@@ -48,7 +48,7 @@ export const useUnreadMessages = () => {
 
     // Clean up subscriptions for challenges that are no longer ongoing
     Object.keys(unsubscribeRefs.current).forEach((challengeId) => {
-      const stillExists = ongoingChallenges.some((ch) => ch.id === challengeId);
+      const stillExists = activeChallenges.some((ch) => ch.id === challengeId);
       if (!stillExists) {
         unsubscribeRefs.current[challengeId]?.();
         delete unsubscribeRefs.current[challengeId];
@@ -67,7 +67,7 @@ export const useUnreadMessages = () => {
       });
       unsubscribeRefs.current = {};
     };
-  }, [ongoingChallenges, user?.id, lastSeenTimes]);
+  }, [activeChallenges, user?.id, lastSeenTimes]);
 
   // Calculate total unread count
   const totalUnread = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0);

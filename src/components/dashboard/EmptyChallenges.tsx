@@ -7,7 +7,7 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 interface Props {
-  mode: 'ongoing' | 'archived';
+  mode: 'active' | 'completed';
   handleJoinChallenge: () => void;
   handleHostChallenge: () => void;
 }
@@ -19,7 +19,7 @@ export const EmptyChallenges: React.FC<Props> = ({
 }) => {
   return (
     <View style={styles.container}>
-      {mode === 'ongoing' ? (
+      {mode === 'active' ? (
         <>
           <View style={styles.imageContainer}>
             <Image

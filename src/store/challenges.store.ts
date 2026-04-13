@@ -3,18 +3,18 @@ import { fetchAllChallenges } from '../services/challenge.service';
 import { Challenge } from '../types/challenge.type';
 
 type ChallengesState = {
-  ongoingChallenges: Challenge[];
-  archivedChallenges: Challenge[];
+  activeChallenges: Challenge[];
+  completedChallenges: Challenge[];
   selectedChallenge: Challenge | null;
   loading: boolean;
   error?: string;
 };
 
 type ChallengesActions = {
-  setOngoingChallenges: (
-    ongoingChallenges: Challenge[] | ((prev: Challenge[]) => Challenge[])
+  setActiveChallenges: (
+    activeChallenges: Challenge[] | ((prev: Challenge[]) => Challenge[])
   ) => void;
-  setArchivedChallenges: (archivedChallenges: Challenge[]) => void;
+  setCompletedChallenges: (completedChallenges: Challenge[]) => void;
   setLoading: (loading: boolean) => void;
   selectChallenge: (challengeId: string) => void;
   fetchChallenges: (silent?: boolean) => void;
@@ -24,8 +24,8 @@ type ChallengesActions = {
 type ChallengesStore = ChallengesState & ChallengesActions;
 
 const initialState: ChallengesState = {
-  ongoingChallenges: [],
-  archivedChallenges: [],
+  activeChallenges: [],
+  completedChallenges: [],
   loading: false,
   error: undefined,
   selectedChallenge: null,
@@ -33,25 +33,25 @@ const initialState: ChallengesState = {
 
 export const useChallengesStore = create<ChallengesStore>(set => ({
   ...initialState,
-  setOngoingChallenges: (
-    ongoingChallenges: Challenge[] | ((prev: Challenge[]) => Challenge[])
+  setActiveChallenges: (
+    activeChallenges: Challenge[] | ((prev: Challenge[]) => Challenge[])
   ) =>
     set(state => ({
-      ongoingChallenges:
-        typeof ongoingChallenges === 'function'
-          ? ongoingChallenges(state.ongoingChallenges)
-          : ongoingChallenges,
+      activeChallenges:
+        typeof activeChallenges === 'function'
+          ? activeChallenges(state.activeChallenges)
+          : activeChallenges,
     })),
-  setArchivedChallenges: (archivedChallenges: Challenge[]) =>
-    set({ archivedChallenges }),
+  setCompletedChallenges: (completedChallenges: Challenge[]) =>
+    set({ completedChallenges }),
   setLoading: (loading: boolean) => set({ loading }),
   selectChallenge: (challengeId: string) => {
     set(state => ({
       selectedChallenge:
-        state.ongoingChallenges.find(
+        state.activeChallenges.find(
           (challenge: Challenge) => challenge.id === challengeId
         ) ||
-        state.archivedChallenges.find(
+        state.completedChallenges.find(
           (challenge: Challenge) => challenge.id === challengeId
         ) ||
         null,
@@ -63,7 +63,7 @@ export const useChallengesStore = create<ChallengesStore>(set => ({
     }
     try {
       const challenges = await fetchAllChallenges();
-      const ongoingChallenges = challenges.filter(
+      const activeChallenges = challenges.filter(
         (challenge: Challenge) =>
           challenge.status === 'active' ||
           challenge.status === 'pending' ||
@@ -71,23 +71,23 @@ export const useChallengesStore = create<ChallengesStore>(set => ({
           challenge.status === 'inactive' ||
           challenge.status === 'finishing'
       );
-      const archivedChallenges = challenges.filter(
+      const completedChallenges = challenges.filter(
         (challenge: Challenge) => challenge.status === 'finish'
       );
 
       set(state => {
         const updatedState: Partial<ChallengesState> = {
-          ongoingChallenges,
-          archivedChallenges,
+          activeChallenges,
+          completedChallenges,
         };
 
         if (state.selectedChallenge) {
           const updatedChallenge =
-            ongoingChallenges.find(
+            activeChallenges.find(
               (challenge: Challenge) =>
                 challenge.id === state.selectedChallenge?.id
             ) ||
-            archivedChallenges.find(
+            completedChallenges.find(
               (challenge: Challenge) =>
                 challenge.id === state.selectedChallenge?.id
             );

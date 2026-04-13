@@ -36,9 +36,9 @@ export const Sidebar: React.FC<Props> = ({
   onLogout,
   onGoToDashboard,
 }) => {
-  const { ongoingChallenges, selectedChallenge } = useChallengesStore();
+  const { activeChallenges: allActiveChallenges, selectedChallenge } = useChallengesStore();
   const { unreadCounts } = useUnreadMessages();
-  const activeChallenges = ongoingChallenges.filter(
+  const activeChallenges = allActiveChallenges.filter(
     (challenge: Challenge) => challenge.status === 'active'
   );
   const sidebarWidth = Math.min(screenWidth * 0.86, 380);

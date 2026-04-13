@@ -10,7 +10,7 @@ import { useChallengesStore } from '../store/challenges.store';
 import { getMessagingSafe } from '../utils/firebase';
 
 export const useNotificationHandler = () => {
-  const { ongoingChallenges, selectChallenge, selectedChallenge } = useChallengesStore();
+  const { activeChallenges, selectChallenge, selectedChallenge } = useChallengesStore();
 
   // Keep a ref so isViewingChatForChallenge always reads the latest value
   // without putting selectedChallenge in the main effect's dependency array.
@@ -153,7 +153,7 @@ export const useNotificationHandler = () => {
       }
     });
 
-    if (ongoingChallenges.length > 0) {
+    if (activeChallenges.length > 0) {
       getInitialNotification(messaging)
         .then(remoteMessage => {
           if (remoteMessage) {
@@ -185,5 +185,5 @@ export const useNotificationHandler = () => {
       unsubscribeNotificationOpened();
       }
     };
-  }, [ongoingChallenges, selectChallenge]); // selectedChallenge intentionally excluded — accessed via ref
+  }, [activeChallenges, selectChallenge]); // selectedChallenge intentionally excluded — accessed via ref
 };

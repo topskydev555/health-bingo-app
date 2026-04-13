@@ -26,15 +26,15 @@ import {
 
 type NavigationProp = NativeStackNavigationProp<DashboardStackParamList>;
 
-type TabType = 'ongoing' | 'completed';
+type TabType = 'active' | 'completed';
 
 let hasAutoNavigated = false;
 
 export const ChallengesListScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('ongoing');
+  const [activeTab, setActiveTab] = useState<TabType>('active');
   const {
-    ongoingChallenges,
-    archivedChallenges,
+    activeChallenges,
+    completedChallenges,
     loading,
     fetchChallenges,
     selectChallenge,
@@ -55,7 +55,7 @@ export const ChallengesListScreen: React.FC = () => {
     if (!hasHydrated || loading) return;
 
     if (lastChallengeId && !hasAutoNavigated) {
-      const lastChallenge = ongoingChallenges.find(ch => ch.id === lastChallengeId);
+      const lastChallenge = activeChallenges.find(ch => ch.id === lastChallengeId);
       if (lastChallenge) {
         hasAutoNavigated = true;
         selectChallenge(lastChallenge.id);
@@ -119,11 +119,11 @@ export const ChallengesListScreen: React.FC = () => {
       );
     }
 
-    if (activeTab === 'ongoing') {
-      if (ongoingChallenges.length === 0) {
+    if (activeTab === 'active') {
+      if (activeChallenges.length === 0) {
         return (
           <EmptyChallenges
-            mode="ongoing"
+            mode="active"
             handleJoinChallenge={() => {
               navigation.navigate(SCREEN_NAMES.JOIN_CHALLENGE as never);
             }}
@@ -162,7 +162,7 @@ export const ChallengesListScreen: React.FC = () => {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {ongoingChallenges.map(ch => (
+            {activeChallenges.map(ch => (
               <ChallengeCard
                 key={ch.id}
                 title={ch.title}
@@ -186,10 +186,10 @@ export const ChallengesListScreen: React.FC = () => {
       );
     }
 
-    if (archivedChallenges.length === 0) {
+    if (completedChallenges.length === 0) {
       return (
         <EmptyChallenges
-          mode="archived"
+          mode="completed"
           handleJoinChallenge={() => {
             navigation.navigate(SCREEN_NAMES.JOIN_CHALLENGE as never);
           }}
@@ -206,7 +206,7 @@ export const ChallengesListScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {archivedChallenges.map(challenge => renderCompletedCard(challenge))}
+        {completedChallenges.map(challenge => renderCompletedCard(challenge))}
       </ScrollView>
     );
   };
@@ -225,16 +225,16 @@ export const ChallengesListScreen: React.FC = () => {
     <View style={styles.wrapper}>
       <DashboardHeader
         title={
-          activeTab === 'ongoing' ? 'Active Challenges' : 'Completed Challenges'
+          activeTab === 'active' ? 'Active Challenges' : 'Completed Challenges'
         }
         action={
           <TouchableOpacity
             onPress={() =>
-              setActiveTab(activeTab === 'ongoing' ? 'completed' : 'ongoing')
+              setActiveTab(activeTab === 'active' ? 'completed' : 'active')
             }
           >
             <Text style={{ color: COLORS.primary.green, marginRight: 4 }}>
-              {activeTab === 'ongoing' ? 'View Completed' : 'View Ongoing'}
+              {activeTab === 'active' ? 'View Completed' : 'View Active'}
             </Text>
           </TouchableOpacity>
         }
