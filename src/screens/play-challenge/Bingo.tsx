@@ -265,7 +265,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
             <Text style={styles.text}>
               {isSetupMode
                 ? 'Setup Week ' + selectedWeek + ' Tasks'
-                : "Let's get started with Week " + selectedWeek + ' Health Bingo'}
+                : "Let's Play Health Bingo"}
             </Text>
           </View>
           <BingoBoard
