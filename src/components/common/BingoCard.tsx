@@ -45,7 +45,7 @@ export const BingoCard: React.FC<BingoCardProps> = ({
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    if (mode === 'mark') {
+    if (mode === 'mark' && !disabled) {
       const pulseAnimation = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -69,7 +69,7 @@ export const BingoCard: React.FC<BingoCardProps> = ({
     } else {
       pulseAnim.setValue(1);
     }
-  }, [mode, pulseAnim]);
+  }, [mode, disabled, pulseAnim]);
 
   const CardWrapper = mode === 'setup' ? TouchableOpacity : Animated.View;
   const cardWrapperProps =
@@ -85,7 +85,7 @@ export const BingoCard: React.FC<BingoCardProps> = ({
         }
       : {
           style: [
-            mode === 'mark' && {
+            mode === 'mark' && !disabled && {
               transform: [{ scale: pulseAnim }],
             },
           ],
@@ -237,7 +237,7 @@ export const BingoCard: React.FC<BingoCardProps> = ({
               mode !== 'check' &&
                 color === COLORS.primary.white &&
                 styles.blackBorder,
-              mode === 'mark' && styles.markedContainer,
+              mode === 'mark' && !disabled && styles.markedContainer,
               mode === 'check' && styles.checkedContainer,
             ]}
           >
