@@ -1,7 +1,7 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CustomButton } from '../../components/common';
 import { DashboardHeader } from '../../components/dashboard';
 import { SCREEN_NAMES } from '../../constants';
@@ -75,7 +75,7 @@ export const Join: React.FC = () => {
           />
         }
       />
-      <View style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <Text style={styles.title}>Let's Play Health Bingo</Text>
 
         <View style={styles.card}>
@@ -153,7 +153,7 @@ export const Join: React.FC = () => {
             textStyle={styles.backButtonText}
           />
         </View>
-      </View>
+      </ScrollView>
     </>
   );
 };
@@ -161,9 +161,12 @@ export const Join: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.primary.white,
+  },
+  contentContainer: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    backgroundColor: COLORS.primary.white,
+    paddingBottom: 32,
   },
   title: {
     fontFamily: FONTS.family.poppinsBold,

@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, ParamListBase, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SCREEN_NAMES } from '../../constants';
@@ -23,7 +23,14 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const { user, logout } = useAuth();
 
   const handleProfileSettings = () => {
-    navigation.navigate(SCREEN_NAMES._DASHBOARD.PROFILE as never);
+    const parent = navigation.getParent<NavigationProp<ParamListBase>>();
+    if (parent) {
+      parent.navigate(SCREEN_NAMES.DASHBOARD, {
+        screen: SCREEN_NAMES._DASHBOARD.PROFILE,
+      });
+    } else {
+      navigation.navigate(SCREEN_NAMES._DASHBOARD.PROFILE as never);
+    }
   };
 
   const handleLogout = () => {
