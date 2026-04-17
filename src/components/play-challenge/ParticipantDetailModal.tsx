@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Participant } from '../../screens/play-challenge/ParticipantManagement';
+import { Participant } from '../../types/participant.type';
 import { removeParticipant } from '../../services/participant.service';
 import { useChallengesStore } from '../../store/challenges.store';
 import { Modal } from '../common/Modal';

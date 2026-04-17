@@ -10,6 +10,7 @@ type Feature = string | FeatureItem;
 
 interface FormattedPlan extends Omit<SubscriptionPlan, 'features'> {
   features: Feature[];
+  subtitle?: string;
   buttonText: string;
   bgColor: string;
   borderColor: string;
@@ -37,25 +38,18 @@ export const usePlans = () => {
       const features: Feature[] = [...plan.features];
 
       if (plan.id === 'free' || plan.id === 'premium') {
-        // Add locked Weight loss tracker to Free and Premium
-        features.push({ text: 'Weight loss tracker', isLocked: true });
-      } else if (plan.id === 'pro' || plan.id === 'pro-lifetime') {
-        // Ensure Pro plans have Weight loss tracker available (unlocked)
-        // Check if it already exists in features (as string or object)
-        const hasWeightLossTracker = features.some(feature => {
-          const featureText =
-            typeof feature === 'string' ? feature : feature.text;
-          return featureText.toLowerCase().includes('weight loss tracker');
-        });
-
-        if (!hasWeightLossTracker) {
-          features.push({ text: 'Weight loss tracker', isLocked: false });
-        }
+        features.push({ text: 'Weight tracking & % progress', isLocked: true });
       }
+
+      const subtitle =
+        plan.id === 'pro' || plan.id === 'pro-lifetime'
+          ? 'Best for weight loss challenges'
+          : undefined;
 
       return {
         ...plan,
         features,
+        subtitle,
         buttonText: plan.id === 'free' ? 'Start Free' : 'Select Plan',
         bgColor:
           plan.id === 'free'

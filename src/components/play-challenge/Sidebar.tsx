@@ -56,13 +56,14 @@ export const Sidebar: React.FC<Props> = ({
     }
   }, [visible, translateX, sidebarWidth]);
 
-  const closeWithAnimation = () => {
+  const closeWithAnimation = (callback?: () => void) => {
     Animated.timing(translateX, {
       toValue: -sidebarWidth,
       duration: 200,
       useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished) onClose();
+    }).start(() => {
+      onClose();
+      callback?.();
     });
   };
 
@@ -75,7 +76,7 @@ export const Sidebar: React.FC<Props> = ({
       visible={visible}
       transparent
       animationType="none"
-      onRequestClose={closeWithAnimation}
+      onRequestClose={() => closeWithAnimation()}
     >
       <View style={styles.overlay}>
         <Animated.View
@@ -106,7 +107,7 @@ export const Sidebar: React.FC<Props> = ({
               <View style={[styles.section, styles.firstSection]}>
                 <View style={styles.sectionButtonWrapper}>
                   <CustomButton
-                    onPress={onGoToDashboard}
+                    onPress={() => closeWithAnimation(onGoToDashboard)}
                     buttonStyle={styles.sectionButton}
                     textStyle={styles.sectionButtonText}
                     variant="default"
@@ -234,7 +235,7 @@ export const Sidebar: React.FC<Props> = ({
           <TouchableOpacity
             style={{ flex: 1 }}
             activeOpacity={1}
-            onPress={closeWithAnimation}
+            onPress={() => closeWithAnimation()}
           />
         </View>
       </View>

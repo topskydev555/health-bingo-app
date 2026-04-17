@@ -9,30 +9,12 @@ import {
   View,
 } from 'react-native';
 import { LoadingCard } from '../../components/common';
+import { Participant } from '../../types/participant.type';
 import { InviteModal } from '../../components/play-challenge/InviteModal';
 import { ParticipantCard } from '../../components/play-challenge/ParticipantCard';
 import { ParticipantDetailModal } from '../../components/play-challenge/ParticipantDetailModal';
 import { fetchParticipants } from '../../services/participant.service';
 import { useChallengesStore } from '../../store/challenges.store';
-
-export interface Participant {
-  id: string;
-  user_id: string | null;
-  email: string;
-  status: 'joined' | 'pending';
-  is_organizer: boolean;
-  points: number;
-  wild_cards: number;
-  joined_at?: string;
-  user: {
-    first_name: string | null;
-    last_name: string | null;
-    display_name?: string | null;
-    country?: string | null;
-    timezone?: string | null;
-    image?: string | null;
-  } | null;
-}
 
 export const ParticipantManagementScreen: React.FC = () => {
   const { selectedChallenge } = useChallengesStore();

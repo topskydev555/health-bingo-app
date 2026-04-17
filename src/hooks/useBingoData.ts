@@ -108,6 +108,12 @@ export const useBingoData = ({
   }, [selectedChallenge?.id, selectedWeek, isSetupMode, isFocused]);
 
   useEffect(() => {
+    if (showWelcomeModal) {
+      setShowWelcomeModal(false);
+    }
+  }, [selectedWeek]);
+
+  useEffect(() => {
     if (!selectedChallenge || showWelcomeModal || !isFocused) {
       return;
     }

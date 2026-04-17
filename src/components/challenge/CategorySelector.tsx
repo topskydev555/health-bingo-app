@@ -14,16 +14,14 @@ import { COLORS, FONTS } from '../../theme';
 interface Props {
   categories: ChallengeCategory[];
   categoryId: string;
-  plan: string;
   handleTypeSelect: (categoryId: string) => void;
 }
 
 const CategoryButton: React.FC<{
   category: ChallengeCategory;
   isSelected: boolean;
-  disabled: boolean;
   onPress: () => void;
-}> = ({ category, isSelected, disabled, onPress }) => {
+}> = ({ category, isSelected, onPress }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const checkmarkScale = useRef(new Animated.Value(0)).current;
 
@@ -68,19 +66,12 @@ const CategoryButton: React.FC<{
           styles.typeButton,
           { backgroundColor: category.color },
           isSelected && styles.typeButtonSelected,
-          disabled && styles.typeButtonDisabled,
         ]}
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        disabled={disabled}
         activeOpacity={1}
       >
-        {disabled && (
-          <View style={styles.lockIconContainer}>
-            <Icon name="lock" size={24} color={COLORS.gray.medium} />
-          </View>
-        )}
         {isSelected && (
           <Animated.View
             style={[
@@ -97,7 +88,6 @@ const CategoryButton: React.FC<{
           style={[
             styles.typeButtonText,
             isSelected && styles.typeButtonTextSelected,
-            disabled && styles.typeButtonTextDisabled,
           ]}
         >
           {category.name}
@@ -105,7 +95,7 @@ const CategoryButton: React.FC<{
         <Icon
           name={category.image}
           size={28}
-          color={disabled ? COLORS.gray.medium : COLORS.primary.white}
+          color={COLORS.primary.white}
           style={styles.categoryIcon}
         />
       </TouchableOpacity>
@@ -116,7 +106,6 @@ const CategoryButton: React.FC<{
 export const CategorySelector: React.FC<Props> = ({
   categories,
   categoryId,
-  plan,
   handleTypeSelect,
 }) => {
   return (
@@ -126,20 +115,14 @@ export const CategorySelector: React.FC<Props> = ({
         Select your main focus area for this challenge.
       </Text>
       <View style={styles.typeButtonsContainer}>
-        {categories?.map(category => {
-          const isSelected = categoryId === category.id;
-          const disabled =
-            (plan === 'free' || plan === 'premium') && category.is_premium;
-          return (
-            <CategoryButton
-              key={category.id}
-              category={category}
-              isSelected={isSelected}
-              disabled={disabled}
-              onPress={() => handleTypeSelect(category.id)}
-            />
-          );
-        })}
+        {categories?.map(category => (
+          <CategoryButton
+            key={category.id}
+            category={category}
+            isSelected={categoryId === category.id}
+            onPress={() => handleTypeSelect(category.id)}
+          />
+        ))}
       </View>
     </View>
   );
@@ -192,9 +175,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.primary.white,
   },
-  typeButtonDisabled: {
-    opacity: 0.6,
-  },
   typeButtonText: {
     fontFamily: FONTS.family.poppinsMedium,
     fontSize: 14,
@@ -207,17 +187,8 @@ const styles = StyleSheet.create({
   typeButtonTextSelected: {
     color: COLORS.primary.white,
   },
-  typeButtonTextDisabled: {
-    color: COLORS.gray.medium,
-  },
   categoryIcon: {
     marginTop: 4,
-  },
-  lockIconContainer: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    opacity: 0.6,
   },
   checkmarkContainer: {
     position: 'absolute',

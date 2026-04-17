@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   BoardLayout,
   CategorySelector,
@@ -14,7 +15,7 @@ import { DashboardHeader } from '../../components/dashboard';
 import { SCREEN_NAMES } from '../../constants/screens';
 import { useCategories, usePlans } from '../../hooks';
 import { ChallengeCategory, useCreateStore } from '../../store';
-import { COLORS } from '../../theme';
+import { COLORS, FONTS } from '../../theme';
 
 export const DefineChallenge: React.FC = () => {
   const {
@@ -34,6 +35,9 @@ export const DefineChallenge: React.FC = () => {
   const navigation = useNavigation();
   const { getPlanById } = usePlans();
   const { categories, loading } = useCategories();
+
+  const selectedCategory = categories?.find(c => c.id === categoryId);
+  const showProUpgradeHint = plan !== 'pro' && selectedCategory?.is_premium;
 
   const handleTypeSelect = (typeId: string) => {
     setCategoryId(typeId);
@@ -90,9 +94,17 @@ export const DefineChallenge: React.FC = () => {
         <CategorySelector
           categories={categories as ChallengeCategory[]}
           categoryId={categoryId as string}
-          plan={plan as string}
           handleTypeSelect={handleTypeSelect}
         />
+
+        {showProUpgradeHint && (
+          <View style={styles.proHintContainer}>
+            <Icon name="info-outline" size={16} color="#7C3AED" style={styles.proHintIcon} />
+            <Text style={styles.proHintText}>
+              Upgrade to Pro to unlock weight tracking, progress and extra badges.
+            </Text>
+          </View>
+        )}
 
         <TitleInput title={title} isEditable={true} setTitle={setTitle} />
 
@@ -142,5 +154,24 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     fontSize: 14,
+  },
+  proHintContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#F3E8FF',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 6,
+  },
+  proHintIcon: {
+    marginTop: 1,
+  },
+  proHintText: {
+    flex: 1,
+    fontFamily: FONTS.family.poppinsRegular,
+    fontSize: 13,
+    color: '#7C3AED',
+    lineHeight: 18,
   },
 });

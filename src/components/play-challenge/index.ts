@@ -12,6 +12,7 @@ export * from './LeaderboardCard';
 export * from './ParticipantCard';
 export * from './ParticipantDetailModal';
 export * from './PaymentModal';
+export * from './UpgradeToProModal';
 export * from './PlanSelector';
 export * from './SetupModeActions';
 export * from './Sidebar';

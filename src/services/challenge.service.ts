@@ -79,6 +79,23 @@ export const updateChallenge = async (challengeId: string, updateData: any) => {
   return response;
 };
 
+export const upgradeChallengeToPro = async (
+  challengeId: string
+): Promise<{ payment_intent_id: string; client_secret: string; amount: number }> => {
+  const response = await apiFetch(`/api/challenge/${challengeId}/upgrade`, 'POST', {});
+  return response;
+};
+
+export const confirmChallengeUpgrade = async (
+  challengeId: string,
+  paymentIntentId: string
+): Promise<{ success: boolean; error?: string }> => {
+  const response = await apiFetch(`/api/challenge/${challengeId}/upgrade/confirm`, 'POST', {
+    payment_intent_id: paymentIntentId,
+  });
+  return response;
+};
+
 export const getLeaderboard = async (
   challengeId: string,
   weekNumber: number,

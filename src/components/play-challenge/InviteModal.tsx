@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { usePlans } from '../../hooks/usePlans';
-import { Participant } from '../../screens/play-challenge/ParticipantManagement';
+import { Participant } from '../../types/participant.type';
 import { inviteParticipants } from '../../services/participant.service';
 import { searchUsers } from '../../services/user.service';
 import { useChallengesStore } from '../../store/challenges.store';

@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, FONTS } from '../../theme';
 
 interface FeatureItem {
@@ -13,6 +12,7 @@ type Feature = string | FeatureItem;
 interface PriceCardProps {
   title: string;
   description: string;
+  subtitle?: string;
   features: Feature[];
   buttonText: string;
   bgColor: string;
@@ -25,6 +25,7 @@ interface PriceCardProps {
 export const PriceCard: React.FC<PriceCardProps> = ({
   title,
   description,
+  subtitle,
   features,
   buttonText,
   bgColor,
@@ -48,6 +49,7 @@ export const PriceCard: React.FC<PriceCardProps> = ({
       <Text style={[styles.title, { color: titleColor }]}>{title}</Text>
 
       <Text style={styles.description}>{description}</Text>
+      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
 
       <View style={styles.featuresContainer}>
         {features.map((feature, index) => {
@@ -58,16 +60,13 @@ export const PriceCard: React.FC<PriceCardProps> = ({
           return (
             <View key={index} style={styles.featureRow}>
               <Text style={styles.bullet}>• </Text>
-              <Text style={[styles.feature, isLocked && styles.featureLocked]}>
-                {featureText}
-              </Text>
-              {isLocked && (
-                <MaterialIcons
-                  name="lock"
-                  size={16}
-                  color={COLORS.gray.mediumDark}
-                  style={styles.lockIcon}
-                />
+              {isLocked ? (
+                <Text style={styles.feature}>
+                  <Text style={styles.featureLocked}>{featureText}</Text>
+                  <Text style={styles.proLockBadge}> (Pro 🔒)</Text>
+                </Text>
+              ) : (
+                <Text style={styles.feature}>{featureText}</Text>
               )}
             </View>
           );
@@ -125,12 +124,22 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     flex: 1,
   },
+  subtitle: {
+    fontSize: 14,
+    fontFamily: FONTS.family.poppinsRegular,
+    color: COLORS.gray.dark,
+    fontStyle: 'italic',
+    marginBottom: 10,
+    marginTop: -6,
+  },
   featureLocked: {
     textDecorationLine: 'line-through',
     color: COLORS.gray.mediumDark,
   },
-  lockIcon: {
-    marginLeft: 6,
+  proLockBadge: {
+    textDecorationLine: 'none',
+    color: COLORS.gray.mediumDark,
+    fontSize: 14,
   },
   button: {
     backgroundColor: COLORS.primary.green,

@@ -6,10 +6,12 @@ import {
   ChallengeDetailsView,
   EditChallengeForm,
   PaymentModal,
+  UpgradeToProModal,
 } from '../../components/play-challenge';
 import { useCategories, usePlans } from '../../hooks';
 import { updateChallenge } from '../../services';
 import { useChallengesStore } from '../../store';
+import { COLORS } from '../../theme';
 import { Challenge } from '../../types/challenge.type';
 
 export const SettingsScreen: React.FC = () => {
@@ -21,6 +23,7 @@ export const SettingsScreen: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [formData, setFormData] = useState({
     title: selectedChallenge?.title || '',
     plan: selectedChallenge?.plan || '',
@@ -182,12 +185,22 @@ export const SettingsScreen: React.FC = () => {
                     />
                   </>
                 ) : (
-                  <CustomButton
-                    text="Edit Settings"
-                    onPress={() => setIsEditing(true)}
-                    variant="primary"
-                    buttonStyle={styles.editButton}
-                  />
+                  <>
+                    {selectedChallenge?.plan === 'premium' && (
+                      <CustomButton
+                        text="Upgrade to Pro"
+                        onPress={() => setShowUpgradeModal(true)}
+                        variant="primary"
+                        buttonStyle={styles.upgradeButton}
+                      />
+                    )}
+                    <CustomButton
+                      text="Edit Settings"
+                      onPress={() => setIsEditing(true)}
+                      variant={selectedChallenge?.plan === 'premium' ? 'outline' : 'primary'}
+                      buttonStyle={styles.editButton}
+                    />
+                  </>
                 )}
               </View>
             )}
@@ -206,6 +219,12 @@ export const SettingsScreen: React.FC = () => {
         onClose={() => setShowPaymentModal(false)}
         onPaymentSuccess={handlePaymentSuccess}
       />
+
+      <UpgradeToProModal
+        visible={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onUpgradeSuccess={() => setShowUpgradeModal(false)}
+      />
     </View>
   );
 };
@@ -213,7 +232,7 @@ export const SettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.gray.light,
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
@@ -226,6 +245,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 12,
+  },
+  upgradeButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: COLORS.primary.blue,
   },
   payButton: {
     flex: 1,

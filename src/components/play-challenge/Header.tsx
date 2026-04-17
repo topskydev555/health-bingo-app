@@ -60,7 +60,6 @@ export const Header: React.FC<Props> = ({ title }) => {
   };
 
   const handleGoToDashboard = () => {
-    setShowSidebar(false);
     const parent = navigation.getParent();
     if (parent) {
       parent.navigate(SCREEN_NAMES.DASHBOARD, {

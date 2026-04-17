@@ -51,6 +51,7 @@ export const ChoosePlan: React.FC = () => {
                 key={plan.id}
                 title={plan.name}
                 description={plan.description}
+                subtitle={plan.subtitle}
                 price={plan.price / 100}
                 features={plan.features}
                 buttonText={plan.buttonText}
