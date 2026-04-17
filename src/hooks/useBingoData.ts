@@ -16,6 +16,7 @@ export const useBingoData = ({
   isSetupMode,
 }: UseBingoDataProps) => {
   const { selectedChallenge } = useChallengesStore();
+  const currentWeek = selectedChallenge?.current_week ?? 1;
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
   const [bingoCardsData, setBingoCardsData] = useState<BingoCard[]>([]);
@@ -68,7 +69,7 @@ export const useBingoData = ({
           selectedWeek
         );
 
-        if (!data?.current_progress) {
+        if (!data?.current_progress && selectedWeek === currentWeek) {
           setShowWelcomeModal(true);
         } else {
           const { current_progress, card_ids, bingoCards } = data;
@@ -89,8 +90,8 @@ export const useBingoData = ({
                 _progress === 'mark' || _progress === 'unmark'
                   ? _progress
                   : Date.parse(_progress)
-                  ? 'check'
-                  : 'unmark',
+                    ? 'check'
+                    : 'unmark',
             };
           });
           setBingoCardsData(_cardData);
@@ -163,7 +164,7 @@ export const useBingoData = ({
           selectedWeek
         );
 
-        if (!data?.current_progress) {
+        if (!data?.current_progress && selectedWeek === currentWeek) {
           setShowWelcomeModal(true);
         } else {
           const { current_progress, card_ids, bingoCards } = data;
@@ -184,8 +185,8 @@ export const useBingoData = ({
                 _progress === 'mark' || _progress === 'unmark'
                   ? _progress
                   : Date.parse(_progress)
-                  ? 'check'
-                  : 'unmark',
+                    ? 'check'
+                    : 'unmark',
             };
           });
           setBingoCardsData(_cardData);
