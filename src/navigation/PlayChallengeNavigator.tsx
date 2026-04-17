@@ -49,9 +49,17 @@ export const PlayChallengeNavigator = () => {
   const isOrganizer = useChallengesStore(state => state.selectedChallenge?.is_organizer ?? false);
 
   // Read once at mount via getState() — no store subscription needed since
-  // initialRouteName is only consumed by React Navigation on first mount
+  // initialRouteName is only consumed by React Navigation on first mount.
+  // Guard against a persisted ParticipantManagement tab when the user is not an organizer.
   const initialRouteName = useRef(
-    (useLastChallengeStore.getState().lastTab ?? SCREEN_NAMES._PLAY_CHALLENGE.BINGO) as keyof ChallengeStackParamList
+    ((): keyof ChallengeStackParamList => {
+      const lastTab = useLastChallengeStore.getState().lastTab ?? SCREEN_NAMES._PLAY_CHALLENGE.BINGO;
+      const isOrganizerAtMount = useChallengesStore.getState().selectedChallenge?.is_organizer ?? false;
+      if (lastTab === SCREEN_NAMES._PLAY_CHALLENGE.PARTICIPANT_MANAGEMENT && !isOrganizerAtMount) {
+        return SCREEN_NAMES._PLAY_CHALLENGE.BINGO;
+      }
+      return lastTab as keyof ChallengeStackParamList;
+    })()
   ).current;
 
   return (

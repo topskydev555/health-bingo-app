@@ -6,7 +6,17 @@ import {
   signUpService,
   verifyCodeService,
 } from '../services';
-import { useAuthStore } from '../store';
+import {
+  useAuthStore,
+  useCardsStore,
+  useCategoriesStore,
+  useChallengesStore,
+  useCreateStore,
+  useHostTutorialStore,
+  useLastChallengeStore,
+  useLastSeenStore,
+  usePlansStore,
+} from '../store';
 
 export const useAuth = () => {
   const {
@@ -21,8 +31,20 @@ export const useAuth = () => {
     setLoading,
     setAuthenticated,
     setRefreshToken,
-    reset: logout,
+    reset: resetAuth,
   } = useAuthStore();
+
+  const logout = () => {
+    resetAuth();
+    useCardsStore.getState().reset();
+    useCategoriesStore.getState().reset();
+    useChallengesStore.getState().reset();
+    useCreateStore.getState().reset();
+    useHostTutorialStore.getState().reset();
+    useLastChallengeStore.getState().reset();
+    useLastSeenStore.getState().reset();
+    usePlansStore.getState().reset();
+  };
 
   const signIn = async (email: string, password: string) => {
     try {
