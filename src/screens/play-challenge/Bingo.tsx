@@ -222,9 +222,10 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
     try {
       playLetsGoSound();
       await createProgress(selectedChallenge?.id as string);
-      setShowWelcomeModal(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setShowWelcomeModal(false);
     }
   };
 

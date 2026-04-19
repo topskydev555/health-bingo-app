@@ -41,25 +41,29 @@ export const useChallengeUpdates = () => {
           return;
         }
 
-        if (isFetchingRef.current) {
-          return;
-        }
-
         if (debounceTimers.current[challengeId]) {
           clearTimeout(debounceTimers.current[challengeId]!);
         }
 
         debounceTimers.current[challengeId] = setTimeout(() => {
-          if (!isFetchingRef.current) {
+          debounceTimers.current[challengeId] = null;
+
+          const doFetch = () => {
             isFetchingRef.current = true;
             lastUpdateTimestamps.current[challengeId] = updateTimestamp;
 
             Promise.resolve(fetchChallengesRef.current(true)).finally(() => {
               isFetchingRef.current = false;
             });
-          }
+          };
 
-          debounceTimers.current[challengeId] = null;
+          if (isFetchingRef.current) {
+            // Retry once the in-progress fetch completes
+            const retryTimer = setTimeout(doFetch, 1000);
+            debounceTimers.current[challengeId] = retryTimer;
+          } else {
+            doFetch();
+          }
         }, 500);
       });
 
