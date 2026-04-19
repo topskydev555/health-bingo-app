@@ -1,5 +1,5 @@
-import React, { forwardRef, useEffect, useRef } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { forwardRef, useCallback, useEffect, useRef } from 'react';
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, FONTS } from '../../theme';
 import { CustomButton } from '../common';
@@ -12,13 +12,10 @@ type Props = {
   isOrganizer: boolean;
 };
 
-const TAB_WIDTH = 104;
-const TAB_GAP = 8;
-const PADDING_HORIZONTAL = 16;
-
 export const WeekTabBar = forwardRef<View, Props>(
   ({ weeks, currentWeek, selectedWeek, selectWeek, isOrganizer }, ref) => {
     const scrollViewRef = useRef<ScrollView>(null);
+    const tabLayouts = useRef<Record<number, { x: number; width: number }>>({});
 
     const isWeekDisabled = (week: number) => !isOrganizer && week > currentWeek;
 
@@ -28,19 +25,21 @@ export const WeekTabBar = forwardRef<View, Props>(
       }
     };
 
+    const scrollToSelectedWeek = useCallback((week: number) => {
+      const layout = tabLayouts.current[week];
+      if (!layout || !scrollViewRef.current) return;
+      const screenWidth = Dimensions.get('window').width;
+      const scrollPosition = layout.x - screenWidth / 2 + layout.width / 2;
+      scrollViewRef.current.scrollTo({
+        x: Math.max(0, scrollPosition),
+        animated: true,
+      });
+    }, []);
+
     useEffect(() => {
-      const selectedIndex = weeks.indexOf(selectedWeek);
-      if (selectedIndex !== -1 && scrollViewRef.current) {
-        const scrollPosition =
-          selectedIndex * (TAB_WIDTH + TAB_GAP) - PADDING_HORIZONTAL;
-        setTimeout(() => {
-          scrollViewRef.current?.scrollTo({
-            x: Math.max(0, scrollPosition),
-            animated: true,
-          });
-        }, 100);
-      }
-    }, [selectedWeek, weeks]);
+      const timer = setTimeout(() => scrollToSelectedWeek(selectedWeek), 150);
+      return () => clearTimeout(timer);
+    }, [selectedWeek, scrollToSelectedWeek]);
 
     const getTabIcon = (week: number) => {
       if (isWeekDisabled(week)) {
@@ -73,24 +72,34 @@ export const WeekTabBar = forwardRef<View, Props>(
             const isCurrent = currentWeek === week;
 
             return (
-              <CustomButton
+              <View
                 key={week}
-                text={`Week ${week}`}
-                onPress={() => handleWeekPress(week)}
-                disabled={isDisabled}
-                icon={getTabIcon(week)}
-                buttonStyle={[
-                  styles.tab,
-                  isActive && styles.activeTab,
-                  isCurrent && !isActive && styles.currentTab,
-                  isDisabled && styles.disabledTab,
-                ]}
-                textStyle={[
-                  styles.tabText,
-                  isActive && styles.activeTabText,
-                  isDisabled && styles.disabledTabText,
-                ]}
-              />
+                onLayout={e => {
+                  const { x, width } = e.nativeEvent.layout;
+                  tabLayouts.current[week] = { x, width };
+                  if (week === selectedWeek) {
+                    scrollToSelectedWeek(week);
+                  }
+                }}
+              >
+                <CustomButton
+                  text={`Week ${week}`}
+                  onPress={() => handleWeekPress(week)}
+                  disabled={isDisabled}
+                  icon={getTabIcon(week)}
+                  buttonStyle={[
+                    styles.tab,
+                    isActive && styles.activeTab,
+                    isCurrent && !isActive && styles.currentTab,
+                    isDisabled && styles.disabledTab,
+                  ]}
+                  textStyle={[
+                    styles.tabText,
+                    isActive && styles.activeTabText,
+                    isDisabled && styles.disabledTabText,
+                  ]}
+                />
+              </View>
             );
           })}
         </ScrollView>

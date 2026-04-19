@@ -76,7 +76,7 @@ export const useBingoData = ({
 
           const _cardData = card_ids.map((id: string, index: number) => {
             const card = bingoCards.find((card: any) => card.id === id);
-            const _progress = current_progress[index];
+            const _progress = current_progress?.[index];
 
             return {
               _id: index.toString(),
@@ -177,7 +177,7 @@ export const useBingoData = ({
 
           const _cardData = card_ids.map((id: string, index: number) => {
             const card = bingoCards.find((card: any) => card.id === id);
-            const _progress = current_progress[index];
+            const _progress = current_progress?.[index];
 
             return {
               _id: index.toString(),

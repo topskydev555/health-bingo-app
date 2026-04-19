@@ -68,11 +68,12 @@ export const useChallengesStore = create<ChallengesStore>(set => ({
           challenge.status === 'active' ||
           challenge.status === 'pending' ||
           challenge.status === 'unpaid' ||
-          challenge.status === 'inactive' ||
-          challenge.status === 'finishing'
+          challenge.status === 'inactive'
       );
       const completedChallenges = challenges.filter(
-        (challenge: Challenge) => challenge.status === 'finish'
+        (challenge: Challenge) =>
+          challenge.status === 'finish' ||
+          challenge.status === 'finishing'
       );
 
       set(state => {

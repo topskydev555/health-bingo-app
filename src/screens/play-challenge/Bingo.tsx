@@ -69,7 +69,7 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
   const isSetupMode = useMemo(() => {
     return Boolean(
       selectedChallenge?.is_organizer &&
-        selectedWeek > (selectedChallenge?.current_week || 0)
+      selectedWeek > (selectedChallenge?.current_week || 0)
     );
   }, [
     selectedChallenge?.is_organizer,
@@ -263,9 +263,12 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
           )}
           <View style={styles.textContainer}>
             <Text style={styles.text}>
-              {isSetupMode
-                ? 'Setup Week ' + selectedWeek + ' Tasks'
-                : "Let's Play Health Bingo"}
+              {
+                (isFinishedWeek || isFinished) ? 'This week has now closed' : (
+                  isSetupMode
+                    ? 'Setup Week ' + selectedWeek + ' Tasks'
+                    : "Let's Play Health Bingo"
+                )}
             </Text>
           </View>
           <BingoBoard
@@ -305,8 +308,8 @@ export const BingoScreen: React.FC<BingoScreenProps> = ({
         </ScrollView>
 
         <WelcomeModal
-          visible={showWelcomeModal}
-          onClose={() => {}}
+          visible={showWelcomeModal && !isFinished && !isFinishedWeek}
+          onClose={() => { }}
           onLetsGo={handleLetsGo}
           title="Welcome aboard!"
           subtitle="A new week, a fresh start - let's go!"
