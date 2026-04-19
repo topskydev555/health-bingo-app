@@ -53,12 +53,19 @@ export const PlayChallengeNavigator = () => {
   // Guard against a persisted ParticipantManagement tab when the user is not an organizer.
   const initialRouteName = useRef(
     ((): keyof ChallengeStackParamList => {
-      const lastTab = useLastChallengeStore.getState().lastTab ?? SCREEN_NAMES._PLAY_CHALLENGE.BINGO;
+      const { lastTab, lastTabChallengeId } = useLastChallengeStore.getState();
+      const currentChallengeId = useChallengesStore.getState().selectedChallenge?.id;
       const isOrganizerAtMount = useChallengesStore.getState().selectedChallenge?.is_organizer ?? false;
-      if (lastTab === SCREEN_NAMES._PLAY_CHALLENGE.PARTICIPANT_MANAGEMENT && !isOrganizerAtMount) {
+
+      // Only restore the last tab if it was recorded for this specific challenge
+      const tab = (lastTabChallengeId === currentChallengeId && lastTab)
+        ? lastTab
+        : SCREEN_NAMES._PLAY_CHALLENGE.BINGO;
+
+      if (tab === SCREEN_NAMES._PLAY_CHALLENGE.PARTICIPANT_MANAGEMENT && !isOrganizerAtMount) {
         return SCREEN_NAMES._PLAY_CHALLENGE.BINGO;
       }
-      return lastTab as keyof ChallengeStackParamList;
+      return tab as keyof ChallengeStackParamList;
     })()
   ).current;
 

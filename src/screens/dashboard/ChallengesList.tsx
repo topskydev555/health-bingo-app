@@ -66,7 +66,8 @@ export const ChallengesListScreen: React.FC = () => {
     }
 
     // User reached the dashboard intentionally — clear the stored last challenge
-    // so the app doesn't auto-navigate on the next launch.
+    // and mark as navigated so subsequent returns don't trigger auto-navigation.
+    hasAutoNavigated = true;
     setLastChallengeId(null);
     setReadyToRender(true);
   }, [hasHydrated, loading]);

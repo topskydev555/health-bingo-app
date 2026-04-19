@@ -75,7 +75,7 @@ export const Footer: React.FC<FooterProps> = ({
             ref={tabRef}
             style={styles.tab}
             onPress={() => {
-              setLastTab(tab.name);
+              setLastTab(tab.name, selectedChallenge?.id ?? null);
               navigation.navigate(tab.name as never);
             }}
             activeOpacity={0.7}
