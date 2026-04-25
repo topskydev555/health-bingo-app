@@ -143,7 +143,7 @@ const initializeSounds = (callback?: () => void) => {
           }
           newBoardSound = null;
         } else {
-          newBoardSound?.setVolume(1.0);
+          newBoardSound?.setVolume(0.5);
           if (__DEV__) {
             console.log(`[Sound] Loaded new board sound`);
           }

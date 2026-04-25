@@ -95,7 +95,9 @@ export const useBingoData = ({
             };
           });
           setBingoCardsData(_cardData);
-          if (!isSetupMode) {
+          const isActiveCurrentWeek =
+            selectedChallenge?.status === 'active' && selectedWeek === currentWeek;
+          if (isActiveCurrentWeek) {
             playNewBoardSound();
           }
         }
@@ -196,7 +198,9 @@ export const useBingoData = ({
             };
           });
           setBingoCardsData(_cardData);
-          if (!isSetupMode) {
+          const isActiveCurrentWeek =
+            selectedChallenge?.status === 'active' && selectedWeek === currentWeek;
+          if (isActiveCurrentWeek) {
             playNewBoardSound();
           }
         }
