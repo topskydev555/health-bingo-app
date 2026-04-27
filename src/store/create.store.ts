@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import { create } from 'zustand';
 import { BingoCard } from '../types';
 
@@ -7,18 +8,9 @@ export type Participant = {
   image?: string;
 };
 
-const getTodayDayOfWeek = (): string => {
-  const day = new Date().getDay();
-  const days = [
-    'sunday',
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-  ];
-  return days[day];
+const getSydneyTodayDayOfWeek = (): string => {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[moment.tz('Australia/Sydney').day()];
 };
 
 type CreateState = {
@@ -29,6 +21,7 @@ type CreateState = {
   cardSize: number;
   categoryId: string | null;
   startingDayOfWeek: string | null;
+  startImmediately: boolean;
 
   bingoCards: BingoCard[];
 
@@ -66,7 +59,8 @@ const initialState: CreateState = {
   duration: 1,
   cardSize: 24,
   categoryId: null,
-  startingDayOfWeek: getTodayDayOfWeek(),
+  startingDayOfWeek: getSydneyTodayDayOfWeek(),
+  startImmediately: true,
   bingoCards: [],
   participants: [],
   loading: false,
@@ -83,7 +77,7 @@ export const useCreateStore = create<CreateStore>(set => ({
   setCardSize: (cardSize: number) => set({ cardSize }),
   setCategoryId: (categoryId: string) => set({ categoryId }),
   setStartingDayOfWeek: (startingDayOfWeek: string) =>
-    set({ startingDayOfWeek }),
+    set({ startingDayOfWeek, startImmediately: startingDayOfWeek === getSydneyTodayDayOfWeek() }),
   setBingoCards: (
     bingoCards: BingoCard[] | ((prev: BingoCard[]) => BingoCard[])
   ) =>

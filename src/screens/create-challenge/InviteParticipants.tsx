@@ -41,6 +41,7 @@ export const InviteParticipants: React.FC = () => {
     participants,
     setParticipants,
     startingDayOfWeek,
+    startImmediately,
   } = useCreateStore();
 
   const isValidEmail = (email: string) =>
@@ -134,6 +135,7 @@ export const InviteParticipants: React.FC = () => {
       card_size: cardSize,
       is_organizer_participant: isOrganizerParticipant,
       starting_day_of_week: startingDayOfWeek,
+      start_immediately: startImmediately,
       participants: participants.map(p => p.email),
       custom_cards: customBingoCards,
       default_cards: defaultBingoCardIds,

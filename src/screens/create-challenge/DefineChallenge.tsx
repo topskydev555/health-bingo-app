@@ -30,6 +30,7 @@ export const DefineChallenge: React.FC = () => {
     setCategoryId,
     startingDayOfWeek,
     setStartingDayOfWeek,
+    startImmediately,
   } = useCreateStore();
 
   const navigation = useNavigation();
@@ -116,6 +117,7 @@ export const DefineChallenge: React.FC = () => {
 
         <StartingDaySelector
           startingDayOfWeek={startingDayOfWeek}
+          startImmediately={startImmediately}
           onChange={setStartingDayOfWeek}
         />
 
