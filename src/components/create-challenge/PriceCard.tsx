@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, FONTS } from '../../theme';
 
 interface FeatureItem {
@@ -50,6 +51,11 @@ export const PriceCard: React.FC<PriceCardProps> = ({
 
       <Text style={styles.description}>{description}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+
+      <View style={styles.hostPaysBanner}>
+        <MaterialIcons name="group" size={16} color={titleColor} />
+        <Text style={[styles.hostPaysText, { color: titleColor }]}>Host pays once — players join free</Text>
+      </View>
 
       <View style={styles.featuresContainer}>
         {features.map((feature, index) => {
@@ -104,6 +110,17 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'left',
     lineHeight: 20,
+  },
+  hostPaysBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
+  hostPaysText: {
+    fontSize: 13,
+    fontFamily: FONTS.family.poppinsMedium,
+    fontWeight: FONTS.weight.bold,
   },
   featuresContainer: {
     marginBottom: 10,
