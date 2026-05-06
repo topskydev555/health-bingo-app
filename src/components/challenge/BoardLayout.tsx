@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   cardSelected: {
     borderColor: COLORS.primary.green,
-    backgroundColor: COLORS.primary.blue,
+    backgroundColor: COLORS.primary.green,
   },
   sizeText: {
     fontFamily: FONTS.family.poppinsMedium,

@@ -89,7 +89,7 @@ export const Sidebar: React.FC<Props> = ({
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Menu</Text>
             <CustomButton
-              onPress={closeWithAnimation}
+              onPress={() => closeWithAnimation()}
               buttonStyle={styles.closeButton}
               variant="default"
               icon={

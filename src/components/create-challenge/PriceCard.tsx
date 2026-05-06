@@ -20,6 +20,7 @@ interface PriceCardProps {
   borderColor: string;
   price: number;
   titleColor: string;
+  showHostPays?: boolean;
   onPress: () => void;
 }
 
@@ -33,6 +34,7 @@ export const PriceCard: React.FC<PriceCardProps> = ({
   borderColor,
   price,
   titleColor,
+  showHostPays = true,
   onPress,
 }) => {
   return (
@@ -52,10 +54,12 @@ export const PriceCard: React.FC<PriceCardProps> = ({
       <Text style={styles.description}>{description}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
 
-      <View style={styles.hostPaysBanner}>
-        <MaterialIcons name="group" size={16} color={titleColor} />
-        <Text style={[styles.hostPaysText, { color: titleColor }]}>Host pays once — players join free</Text>
-      </View>
+      {showHostPays && (
+        <View style={styles.hostPaysBanner}>
+          <MaterialIcons name="group" size={14} color={titleColor} />
+          <Text style={[styles.hostPaysText, { color: titleColor }]}>Host pays once — players join free</Text>
+        </View>
+      )}
 
       <View style={styles.featuresContainer}>
         {features.map((feature, index) => {
@@ -99,15 +103,15 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: FONTS.family.poppinsBold,
-    marginBottom: 10,
+    marginBottom: 8,
     textAlign: 'left',
   },
   description: {
-    fontSize: 18,
+    fontSize: 14,
     color: COLORS.gray.veryDark,
-    marginBottom: 12,
+    marginBottom: 10,
     textAlign: 'left',
     lineHeight: 20,
   },
@@ -115,10 +119,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   hostPaysText: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: FONTS.family.poppinsMedium,
     fontWeight: FONTS.weight.bold,
   },
@@ -128,17 +132,17 @@ const styles = StyleSheet.create({
   featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   bullet: {
-    fontSize: 16,
+    fontSize: 13,
     color: COLORS.gray.dark,
   },
   feature: {
-    fontSize: 16,
+    fontSize: 13,
     color: COLORS.gray.dark,
     textAlign: 'left',
-    lineHeight: 20,
+    lineHeight: 18,
     flex: 1,
   },
   subtitle: {
@@ -146,8 +150,8 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.family.poppinsRegular,
     color: COLORS.gray.dark,
     fontStyle: 'italic',
-    marginBottom: 10,
-    marginTop: -6,
+    marginBottom: 8,
+    marginTop: -4,
   },
   featureLocked: {
     textDecorationLine: 'line-through',
@@ -156,7 +160,7 @@ const styles = StyleSheet.create({
   proLockBadge: {
     textDecorationLine: 'none',
     color: COLORS.gray.mediumDark,
-    fontSize: 14,
+    fontSize: 13,
   },
   button: {
     backgroundColor: COLORS.primary.green,
@@ -180,7 +184,7 @@ const styles = StyleSheet.create({
   },
   price: {
     color: COLORS.primary.blue,
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: FONTS.family.poppinsBold,
   },
 });

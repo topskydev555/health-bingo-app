@@ -26,12 +26,19 @@ const getSydneyTodayDayOfWeek = (): string => {
   return days[moment.tz(DEFAULT_TIMEZONE).day()];
 };
 
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 export const StartingDaySelector: React.FC<Props> = ({
   startingDayOfWeek,
   startImmediately,
   onChange,
 }) => {
-  const iconColor = startImmediately ? COLORS.primary.white : COLORS.primary.green;
+  const isScheduled = !startImmediately && startingDayOfWeek !== null;
+  const iconColor = startImmediately ? COLORS.primary.white : isScheduled ? COLORS.text.secondary : COLORS.primary.green;
+  const mainLabel = isScheduled ? 'Scheduled Start Day' : 'Start Immediately';
+  const subLabel = isScheduled
+    ? `Challenge begins on ${capitalize(startingDayOfWeek as string)}`
+    : 'Challenge begins today';
 
   return (
     <View>
@@ -40,20 +47,20 @@ export const StartingDaySelector: React.FC<Props> = ({
         Choose when your challenge starts.
       </Text>
 
-      {/* Start Immediately card */}
+      {/* Start Immediately / Scheduled Start card */}
       <TouchableOpacity
         style={[styles.immediateButton, startImmediately && styles.immediateButtonSelected]}
         onPress={() => onChange(getSydneyTodayDayOfWeek())}
         activeOpacity={0.7}
       >
         <View style={styles.immediateRow}>
-          <Icon name="bolt" size={20} color={iconColor} style={styles.immediateIcon} />
+          <Icon name={isScheduled ? 'event' : 'bolt'} size={20} color={iconColor} style={styles.immediateIcon} />
           <View>
             <Text style={[styles.immediateButtonText, startImmediately && styles.immediateButtonTextSelected]}>
-              Start Immediately
+              {mainLabel}
             </Text>
             <Text style={[styles.immediateButtonSub, startImmediately && styles.immediateButtonSubSelected]}>
-              Challenge begins today
+              {subLabel}
             </Text>
           </View>
         </View>
@@ -184,8 +191,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dayButtonSelected: {
-    backgroundColor: COLORS.primary.blue,
-    borderColor: COLORS.primary.blue,
+    backgroundColor: COLORS.primary.green,
+    borderColor: COLORS.primary.green,
   },
   dayButtonText: {
     fontFamily: FONTS.family.poppinsRegular,

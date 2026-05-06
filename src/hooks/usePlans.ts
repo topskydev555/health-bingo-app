@@ -15,6 +15,7 @@ interface FormattedPlan extends Omit<SubscriptionPlan, 'features'> {
   bgColor: string;
   borderColor: string;
   titleColor: string;
+  showHostPays: boolean;
 }
 
 export const usePlans = () => {
@@ -38,7 +39,7 @@ export const usePlans = () => {
       const features: Feature[] = [...plan.features];
 
       if (plan.id === 'free' || plan.id === 'premium') {
-        features.push({ text: 'Weight tracking & % progress', isLocked: true });
+        features.push({ text: 'Weight tracking & progress', isLocked: true });
       }
 
       const subtitle =
@@ -50,6 +51,7 @@ export const usePlans = () => {
         ...plan,
         features,
         subtitle,
+        showHostPays: plan.id !== 'free',
         buttonText: plan.id === 'free' ? 'Start Free' : 'Select Plan',
         bgColor:
           plan.id === 'free'

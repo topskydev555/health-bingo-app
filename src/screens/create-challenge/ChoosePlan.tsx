@@ -58,6 +58,7 @@ export const ChoosePlan: React.FC = () => {
                 bgColor={plan.bgColor}
                 borderColor={plan.borderColor}
                 titleColor={plan.titleColor}
+                showHostPays={plan.showHostPays}
                 onPress={() => {
                   setPlan(plan.id);
                   navigation.navigate(
