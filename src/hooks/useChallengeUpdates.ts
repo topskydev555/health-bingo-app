@@ -2,99 +2,77 @@ import { useEffect, useRef } from 'react';
 import { subscribeToChallengeUpdate } from '../services/firebase-chat.service';
 import { useAuthStore, useChallengesStore } from '../store';
 
+const DEBOUNCE_MS = 500;
+
 export const useChallengeUpdates = () => {
   const { activeChallenges, fetchChallenges } = useChallengesStore();
   const { user } = useAuthStore();
-  const unsubscribeRefs = useRef<Record<string, (() => void) | null>>({});
-  const fetchChallengesRef = useRef(fetchChallenges);
-  const lastUpdateTimestamps = useRef<Record<string, number>>({});
-  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
-  const isFetchingRef = useRef(false);
+
+  const subscriptionsRef = useRef<Map<string, () => void>>(new Map());
+  const fetchRef = useRef(fetchChallenges);
+  const challengesRef = useRef(activeChallenges);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fetchingRef = useRef(false);
+
+  // Update refs inline — avoids separate sync effects and always reflects the
+  // latest values without adding them to the subscription effect's dep array.
+  fetchRef.current = fetchChallenges;
+  challengesRef.current = activeChallenges;
+
+  // Stable primitive: effect only re-runs when the SET of IDs changes (add/remove).
+  // Firebase onValue fires immediately on subscribe, so re-subscribing on every
+  // data update would cause: fetch → store update → resubscribe → fetch → ∞
+  const idsKey = activeChallenges.map(c => c.id).sort().join(',');
 
   useEffect(() => {
-    fetchChallengesRef.current = fetchChallenges;
-  }, [fetchChallenges]);
+    if (!user?.id) return;
 
-  useEffect(() => {
-    if (!user?.id) {
-      return;
-    }
-
-    activeChallenges.forEach((challenge) => {
-      const challengeId = challenge.id;
-
-      if (unsubscribeRefs.current[challengeId]) {
-        unsubscribeRefs.current[challengeId]?.();
-        unsubscribeRefs.current[challengeId] = null;
-      }
-
-      if (debounceTimers.current[challengeId]) {
-        clearTimeout(debounceTimers.current[challengeId]!);
-        debounceTimers.current[challengeId] = null;
-      }
-
-      const unsubscribe = subscribeToChallengeUpdate(challengeId, (updateData: { timestamp?: number; updated_at?: string }) => {
-        const updateTimestamp = updateData?.timestamp || Date.now();
-        const lastTimestamp = lastUpdateTimestamps.current[challengeId] || 0;
-
-        if (updateTimestamp <= lastTimestamp) {
+    const scheduleFetch = () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        debounceRef.current = null;
+        if (fetchingRef.current) {
+          // Fetch already in-flight — reschedule after it settles.
+          scheduleFetch();
           return;
         }
+        fetchingRef.current = true;
+        Promise.resolve(fetchRef.current(true)).finally(() => {
+          fetchingRef.current = false;
+        });
+      }, DEBOUNCE_MS);
+    };
 
-        if (debounceTimers.current[challengeId]) {
-          clearTimeout(debounceTimers.current[challengeId]!);
-        }
+    const challenges = challengesRef.current;
 
-        debounceTimers.current[challengeId] = setTimeout(() => {
-          debounceTimers.current[challengeId] = null;
+    // Subscribe to challenges we haven't seen yet.
+    challenges.forEach(({ id }) => {
+      if (subscriptionsRef.current.has(id)) return;
 
-          const doFetch = () => {
-            isFetchingRef.current = true;
-            lastUpdateTimestamps.current[challengeId] = updateTimestamp;
-
-            Promise.resolve(fetchChallengesRef.current(true)).finally(() => {
-              isFetchingRef.current = false;
-            });
-          };
-
-          if (isFetchingRef.current) {
-            // Retry once the in-progress fetch completes
-            const retryTimer = setTimeout(doFetch, 1000);
-            debounceTimers.current[challengeId] = retryTimer;
-          } else {
-            doFetch();
-          }
-        }, 500);
+      // Firebase onValue fires once immediately with the current snapshot.
+      // Drop that first call — we only want to react to genuine updates.
+      let initialFire = true;
+      const unsubscribe = subscribeToChallengeUpdate(id, () => {
+        if (initialFire) { initialFire = false; return; }
+        scheduleFetch();
       });
-
-      unsubscribeRefs.current[challengeId] = unsubscribe;
+      subscriptionsRef.current.set(id, unsubscribe);
     });
 
-    Object.keys(unsubscribeRefs.current).forEach((challengeId) => {
-      const stillExists = activeChallenges.some((ch) => ch.id === challengeId);
-      if (!stillExists) {
-        unsubscribeRefs.current[challengeId]?.();
-        delete unsubscribeRefs.current[challengeId];
-        delete lastUpdateTimestamps.current[challengeId];
-        if (debounceTimers.current[challengeId]) {
-          clearTimeout(debounceTimers.current[challengeId]!);
-          delete debounceTimers.current[challengeId];
-        }
+    // Unsubscribe listeners for challenges that are no longer active.
+    const activeIds = new Set(challenges.map(c => c.id));
+    subscriptionsRef.current.forEach((unsubscribe, id) => {
+      if (!activeIds.has(id)) {
+        unsubscribe();
+        subscriptionsRef.current.delete(id);
       }
     });
 
     return () => {
-      Object.values(unsubscribeRefs.current).forEach((unsubscribe) => {
-        unsubscribe?.();
-      });
-      Object.values(debounceTimers.current).forEach((timer) => {
-        if (timer) {
-          clearTimeout(timer);
-        }
-      });
-      unsubscribeRefs.current = {};
-      debounceTimers.current = {};
+      subscriptionsRef.current.forEach(unsubscribe => unsubscribe());
+      subscriptionsRef.current.clear();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = null;
     };
-  }, [activeChallenges, user?.id]);
+  }, [idsKey, user?.id]);
 };
-

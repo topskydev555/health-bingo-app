@@ -32,7 +32,7 @@ export const useLastChallengeStore = create<LastChallengeStore>()(
       setLastChallengeId: (lastChallengeId) => set({ lastChallengeId }),
       setLastTab: (lastTab, lastTabChallengeId) => set({ lastTab, lastTabChallengeId }),
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),
-      reset: () => set(initialState),
+      reset: () => set({ ...initialState, hasHydrated: true }),
     }),
     {
       name: 'last-challenge-storage',
@@ -42,10 +42,8 @@ export const useLastChallengeStore = create<LastChallengeStore>()(
         lastTab: state.lastTab,
         lastTabChallengeId: state.lastTabChallengeId,
       }),
-      onRehydrateStorage: () => state => {
-        if (state) {
-          state.setHasHydrated(true);
-        }
+      onRehydrateStorage: () => _state => {
+        useLastChallengeStore.getState().setHasHydrated(true);
       },
     }
   )
