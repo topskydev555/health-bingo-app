@@ -172,7 +172,7 @@ export const ChatScreen: React.FC = () => {
       let errorMessage = 'Failed to open image picker';
       if (response.errorCode === 'permission') {
         errorMessage =
-          'Permission denied. Please enable camera and photo library access in settings.';
+          'Permission denied. Please enable camera access in settings.';
       } else if (response.errorMessage) {
         errorMessage = response.errorMessage;
       }
@@ -213,6 +213,7 @@ export const ChatScreen: React.FC = () => {
               {
                 mediaType: 'photo',
                 quality: 0.8,
+                selectionLimit: 1,
               },
               handleImageResponse
             );

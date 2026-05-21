@@ -66,7 +66,7 @@ export const ProfileIcon: React.FC<ProfileIconProps> = ({
       let errorMessage = 'Failed to open image picker';
       if (response.errorCode === 'permission') {
         errorMessage =
-          'Permission denied. Please enable camera and photo library access in settings.';
+          'Permission denied. Please enable camera access in settings.';
       } else if (response.errorMessage) {
         errorMessage = response.errorMessage;
       }
