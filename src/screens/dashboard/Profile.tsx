@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -94,14 +93,11 @@ export const ProfileScreen: React.FC = () => {
           }
         />
       )}
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.select({ ios: 'padding', android: 'height' })}
-      >
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
       >
         <View style={styles.profilePictureContainer}>
           <View style={styles.profilePictureWrapper}>
@@ -214,7 +210,6 @@ export const ProfileScreen: React.FC = () => {
           )}
         </View>
       </ScrollView>
-      </KeyboardAvoidingView>
     </View>
   );
 };

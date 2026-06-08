@@ -2,7 +2,6 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { usePaymentSheet } from '@stripe/stripe-react-native';
 import React, { useState } from 'react';
 import {
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -186,15 +185,12 @@ export const PayChallenge: React.FC = () => {
   return (
     <>
       <DashboardHeader title="Challenge Published" showProfileIcon={false} />
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.select({ ios: 'padding', android: 'height' })}
-      >
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
       >
         {/* Plan Details */}
         <View style={styles.planContainer}>
@@ -285,7 +281,6 @@ export const PayChallenge: React.FC = () => {
           </View>
         </View>
       </ScrollView>
-      </KeyboardAvoidingView>
     </>
   );
 };

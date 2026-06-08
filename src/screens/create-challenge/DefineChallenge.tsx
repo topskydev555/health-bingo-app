@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -99,15 +98,12 @@ export const DefineChallenge: React.FC = () => {
         onBack={handleBack}
         bgColor={COLORS.gray.veryLight}
       />
-      <KeyboardAvoidingView
+      <ScrollView
         style={styles.flex}
-        behavior={Platform.select({ ios: 'padding', android: 'height' })}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
       >
-        <ScrollView
-          style={styles.flex}
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-        >
         <CategorySelector
           categories={categories as ChallengeCategory[]}
           categoryId={categoryId as string}
@@ -150,8 +146,7 @@ export const DefineChallenge: React.FC = () => {
             startingDayOfWeek === null
           }
         />
-        </ScrollView>
-      </KeyboardAvoidingView>
+      </ScrollView>
 
       <LoadingCard
         visible={loading}
