@@ -1,7 +1,15 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { usePaymentSheet } from '@stripe/stripe-react-native';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CustomButton } from '../../components/common';
 import { DashboardHeader } from '../../components/dashboard';
@@ -178,10 +186,15 @@ export const PayChallenge: React.FC = () => {
   return (
     <>
       <DashboardHeader title="Challenge Published" showProfileIcon={false} />
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.select({ ios: 'padding', android: 'height' })}
+      >
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Plan Details */}
         <View style={styles.planContainer}>
@@ -272,6 +285,7 @@ export const PayChallenge: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 };

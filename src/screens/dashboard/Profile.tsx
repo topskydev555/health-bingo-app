@@ -1,11 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -92,9 +94,14 @@ export const ProfileScreen: React.FC = () => {
           }
         />
       )}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.select({ ios: 'padding', android: 'height' })}
+      >
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.profilePictureContainer}>
           <View style={styles.profilePictureWrapper}>
@@ -207,6 +214,7 @@ export const ProfileScreen: React.FC = () => {
           )}
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };

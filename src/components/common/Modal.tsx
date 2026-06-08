@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import {
   Animated,
   Dimensions,
+  KeyboardAvoidingView,
   Modal as RNModal,
+  Platform,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -68,29 +70,37 @@ export const Modal: React.FC<ModalProps> = ({
       animationType="none"
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback onPress={() => { }}>
-            <Animated.View
-              style={[
-                styles.modalContainer,
-                { width: modalWidth },
-                {
-                  opacity: fadeAnim,
-                  transform: [{ scale: scaleAnim }],
-                },
-              ]}
-            >
-              {children}
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: 'padding', android: 'height' })}
+      >
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback onPress={() => { }}>
+              <Animated.View
+                style={[
+                  styles.modalContainer,
+                  { width: modalWidth },
+                  {
+                    opacity: fadeAnim,
+                    transform: [{ scale: scaleAnim }],
+                  },
+                ]}
+              >
+                {children}
+              </Animated.View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </RNModal>
   );
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

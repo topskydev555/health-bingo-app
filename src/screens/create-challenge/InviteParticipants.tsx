@@ -3,6 +3,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -176,7 +178,10 @@ export const InviteParticipants: React.FC = () => {
         }
         showProfileIcon={false}
       />
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.select({ ios: 'padding', android: 'height' })}
+      >
         <Header
           title="Invite Players"
           step={3}
@@ -261,7 +266,7 @@ export const InviteParticipants: React.FC = () => {
             </Text>
           </TouchableOpacity>
         </Footer>
-      </View>
+      </KeyboardAvoidingView>
     </>
   );
 };

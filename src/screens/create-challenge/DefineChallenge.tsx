@@ -1,6 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   BoardLayout,
@@ -91,7 +99,15 @@ export const DefineChallenge: React.FC = () => {
         onBack={handleBack}
         bgColor={COLORS.gray.veryLight}
       />
-      <ScrollView contentContainerStyle={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: 'padding', android: 'height' })}
+      >
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
         <CategorySelector
           categories={categories as ChallengeCategory[]}
           categoryId={categoryId as string}
@@ -134,7 +150,8 @@ export const DefineChallenge: React.FC = () => {
             startingDayOfWeek === null
           }
         />
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <LoadingCard
         visible={loading}
@@ -146,6 +163,9 @@ export const DefineChallenge: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     padding: 20,
     paddingBottom: 40,
