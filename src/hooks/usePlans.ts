@@ -52,7 +52,12 @@ export const usePlans = () => {
         features,
         subtitle,
         showHostPays: plan.id !== 'free',
-        buttonText: plan.id === 'free' ? 'Start Free' : 'Select Plan',
+        buttonText:
+          plan.id === 'free'
+            ? 'Start Free'
+            : plan.id === 'premium'
+            ? 'Start Premium Challenge'
+            : 'Start Pro Challenge',
         bgColor:
           plan.id === 'free'
             ? '#FFFFFF'
