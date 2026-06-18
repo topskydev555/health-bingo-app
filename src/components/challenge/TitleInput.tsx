@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TextInputProps, View } from 'react-native';
 import { COLORS, FONTS } from '../../theme';
 import { Input } from '../common';
 
@@ -6,12 +6,14 @@ interface Props {
   title: string;
   isEditable: boolean;
   setTitle: (value: string) => void;
+  onFocus?: TextInputProps['onFocus'];
 }
 
 export const TitleInput: React.FC<Props> = ({
   title,
   isEditable,
   setTitle,
+  onFocus,
 }) => {
   return (
     <View>
@@ -25,6 +27,7 @@ export const TitleInput: React.FC<Props> = ({
         onChangeText={setTitle}
         inputStyle={styles.inputStyle}
         disabled={!isEditable}
+        onFocus={onFocus}
       />
     </View>
   );

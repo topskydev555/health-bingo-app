@@ -26,6 +26,7 @@ type InputProps = {
   keyboardType?: TextInputProps['keyboardType'];
   maxLength?: number;
   autoCapitalize?: TextInputProps['autoCapitalize'];
+  onFocus?: TextInputProps['onFocus'];
 };
 
 export const Input: React.FC<InputProps> = ({
@@ -42,6 +43,7 @@ export const Input: React.FC<InputProps> = ({
   keyboardType,
   maxLength,
   autoCapitalize = 'none',
+  onFocus,
 }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -104,6 +106,7 @@ export const Input: React.FC<InputProps> = ({
           keyboardType={keyboardType}
           maxLength={maxLength}
           autoCapitalize={autoCapitalize}
+          onFocus={onFocus}
         />
         {renderRightIcon()}
       </View>

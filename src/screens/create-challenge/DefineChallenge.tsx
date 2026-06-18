@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Platform,
   ScrollView,
@@ -43,6 +43,19 @@ export const DefineChallenge: React.FC = () => {
   const navigation = useNavigation();
   const { getPlanById } = usePlans();
   const { categories, loading } = useCategories();
+
+  const scrollRef = useRef<ScrollView>(null);
+  const titleSectionY = useRef(0);
+
+  // On Android the window only resizes for the keyboard — it does not scroll the
+  // focused input into view. Bring the title section to the top when it focuses
+  // so the keyboard never covers it. (iOS is handled by automaticallyAdjustKeyboardInsets.)
+  const handleTitleFocus = () => {
+    if (Platform.OS !== 'android') return;
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({ y: titleSectionY.current, animated: true });
+    }, 100);
+  };
 
   const selectedCategory = categories?.find(c => c.id === categoryId);
   const showProUpgradeHint = plan !== 'pro' && selectedCategory?.is_premium;
@@ -99,6 +112,7 @@ export const DefineChallenge: React.FC = () => {
         bgColor={COLORS.gray.veryLight}
       />
       <ScrollView
+        ref={scrollRef}
         style={styles.flex}
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
@@ -119,7 +133,18 @@ export const DefineChallenge: React.FC = () => {
           </View>
         )}
 
-        <TitleInput title={title} isEditable={true} setTitle={setTitle} />
+        <View
+          onLayout={e => {
+            titleSectionY.current = e.nativeEvent.layout.y;
+          }}
+        >
+          <TitleInput
+            title={title}
+            isEditable={true}
+            setTitle={setTitle}
+            onFocus={handleTitleFocus}
+          />
+        </View>
 
         <DurationSelector
           duration={duration}
