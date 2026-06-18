@@ -9,9 +9,9 @@ import {
   UpgradeToProModal,
 } from '../../components/play-challenge';
 import { useCategories, usePlans } from '../../hooks';
-import { updateChallenge } from '../../services';
+import { finishChallenge, updateChallenge } from '../../services';
 import { useChallengesStore } from '../../store';
-import { COLORS } from '../../theme';
+import { COLORS, FONTS } from '../../theme';
 import { Challenge } from '../../types/challenge.type';
 
 export const SettingsScreen: React.FC = () => {
@@ -104,6 +104,40 @@ export const SettingsScreen: React.FC = () => {
     setShowPaymentModal(false);
   };
 
+  const handleEndChallenge = () => {
+    Alert.alert(
+      'End Challenge',
+      'End this challenge for everyone? It will be marked completed and can no longer be played.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'End',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const response = await finishChallenge(
+                selectedChallenge?.id as string
+              );
+              setActiveChallenges((prev: Challenge[]) =>
+                prev.map((challenge: Challenge) =>
+                  challenge.id === selectedChallenge?.id
+                    ? { ...challenge, ...response }
+                    : challenge
+                )
+              );
+              selectChallenge(selectedChallenge?.id as string);
+            } catch (error) {
+              Alert.alert('Error', 'Failed to end challenge');
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (!selectedChallenge) {
     return null;
   }
@@ -168,6 +202,7 @@ export const SettingsScreen: React.FC = () => {
             />
 
             {isOrganizer && !isFinished && (
+              <>
               <View style={styles.buttonGroup}>
                 {selectedChallenge?.status === 'unpaid' ? (
                   <>
@@ -203,6 +238,17 @@ export const SettingsScreen: React.FC = () => {
                   </>
                 )}
               </View>
+
+              {selectedChallenge?.status !== 'unpaid' && (
+                <CustomButton
+                  text="End Challenge"
+                  onPress={handleEndChallenge}
+                  variant="outline"
+                  buttonStyle={styles.endChallengeButton}
+                  textStyle={styles.endChallengeText}
+                />
+              )}
+              </>
             )}
           </>
         )}
@@ -266,5 +312,17 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 12,
+  },
+  endChallengeButton: {
+    marginTop: 12,
+    height: 48,
+    borderRadius: 12,
+    borderColor: COLORS.primary.red,
+    backgroundColor: COLORS.primary.white,
+  },
+  endChallengeText: {
+    color: COLORS.primary.red,
+    fontFamily: FONTS.family.poppinsMedium,
+    fontSize: 14,
   },
 });

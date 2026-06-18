@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import {
+  deleteAccount as deleteAccountService,
   sendVerificationCodeService,
   signInService,
   signInWithGoogleService,
@@ -44,6 +45,21 @@ export const useAuth = () => {
     useLastChallengeStore.getState().reset();
     useLastSeenStore.getState().reset();
     usePlansStore.getState().reset();
+  };
+
+  const deleteAccount = async () => {
+    try {
+      setLoading(true);
+      await deleteAccountService();
+      logout();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to delete account'
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signIn = async (email: string, password: string) => {
@@ -185,6 +201,7 @@ export const useAuth = () => {
       signInWithGoogle,
       verifyCode,
       sendVerificationCode,
+      deleteAccount,
       logout,
       token,
       isAuthenticated,
@@ -198,6 +215,7 @@ export const useAuth = () => {
       signInWithGoogle,
       verifyCode,
       sendVerificationCode,
+      deleteAccount,
       logout,
       token,
       isAuthenticated,

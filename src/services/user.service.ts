@@ -74,6 +74,10 @@ export const getImageUrl = async (): Promise<{ imageUrl: string | null }> => {
   return { imageUrl: response.image_url };
 };
 
+export const deleteAccount = async (): Promise<void> => {
+  await apiFetch('/api/user/me', 'DELETE', {});
+};
+
 export const searchUsers = async (username: string): Promise<any> => {
   const response = await apiFetch(
     `/api/user/search?username=${encodeURIComponent(username)}`,

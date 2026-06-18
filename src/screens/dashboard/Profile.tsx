@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Platform,
   ScrollView,
   StyleSheet,
@@ -19,7 +20,7 @@ import {
   TimezoneSelector,
 } from '../../components/dashboard';
 import { SCREEN_NAMES } from '../../constants';
-import { useUser } from '../../hooks';
+import { useAuth, useUser } from '../../hooks';
 import { COLORS, FONTS } from '../../theme';
 
 type ProfileMode = 'setup' | 'view' | 'edit';
@@ -43,6 +44,8 @@ export const ProfileScreen: React.FC = () => {
     saveProfile,
   } = useUser();
 
+  const { deleteAccount } = useAuth();
+
   const [mode, setMode] = useState<ProfileMode>('view');
 
   useEffect(() => {
@@ -64,6 +67,33 @@ export const ProfileScreen: React.FC = () => {
     } else {
       navigation.navigate(SCREEN_NAMES._DASHBOARD.CHALLENGES_LIST as never);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'This permanently deletes your account and all associated data. This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAccount();
+              navigation.navigate(SCREEN_NAMES.AUTH as never);
+            } catch (error) {
+              Alert.alert(
+                'Unable to delete account',
+                error instanceof Error
+                  ? error.message
+                  : 'Something went wrong. Please try again.'
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleRemoveImage = async () => {
@@ -209,6 +239,15 @@ export const ProfileScreen: React.FC = () => {
             />
           )}
         </View>
+
+        {mode === 'view' && (
+          <TouchableOpacity
+            style={styles.deleteAccountButton}
+            onPress={handleDeleteAccount}
+          >
+            <Text style={styles.deleteAccountText}>Delete Account</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </View>
   );
@@ -273,6 +312,16 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   buttonTextStyle: {
+    fontSize: FONTS.size.base,
+  },
+  deleteAccountButton: {
+    marginTop: 32,
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  deleteAccountText: {
+    color: COLORS.primary.red,
+    fontFamily: FONTS.family.poppinsMedium,
     fontSize: FONTS.size.base,
   },
 });
