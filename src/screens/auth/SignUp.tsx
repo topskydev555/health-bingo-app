@@ -1,3 +1,4 @@
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
@@ -11,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-import { AuthLogo } from '../../components/auth';
+import { AppleSignInButton, AuthLogo } from '../../components/auth';
 import { CustomButton, Input } from '../../components/common';
 import { SCREEN_NAMES } from '../../constants';
 import { useAuth, useToast } from '../../hooks';
@@ -26,7 +27,7 @@ export const SignUpScreen: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  const { signUp, loading } = useAuth();
+  const { signUp, loading, signInWithApple } = useAuth();
   const { showToast } = useToast();
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
@@ -70,6 +71,30 @@ export const SignUpScreen: React.FC = () => {
         err instanceof Error ? err.message : 'Something went wrong',
         'error'
       );
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+      });
+
+      const { identityToken, fullName, email } = appleAuthRequestResponse;
+
+      if (identityToken) {
+        await signInWithApple(identityToken, fullName, email);
+        navigation.navigate(SCREEN_NAMES.DASHBOARD as never);
+      } else {
+        showToast('Apple Sign In failed', 'error');
+      }
+    } catch (err: any) {
+      if (err.code === appleAuth.Error.CANCELED) {
+        showToast('Sign in was cancelled', 'info');
+      } else {
+        showToast('Apple Sign In failed', 'error');
+      }
     }
   };
 
@@ -160,6 +185,17 @@ export const SignUpScreen: React.FC = () => {
             disabled={!isFormValid}
             loading={loading}
           />
+
+          {Platform.OS === 'ios' && appleAuth.isSupported && (
+            <>
+              <View style={styles.dividerContainer}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>OR</Text>
+                <View style={styles.dividerLine} />
+              </View>
+              <AppleSignInButton onPress={handleAppleSignIn} />
+            </>
+          )}
 
           <View style={styles.signInContainer}>
             <Text style={styles.signInText}>Already have an account? </Text>
@@ -257,6 +293,22 @@ const styles = StyleSheet.create({
   },
   buttonTextStyle: {
     fontSize: 14,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.gray.mediumDark,
+  },
+  dividerText: {
+    marginHorizontal: 6,
+    color: COLORS.gray.mediumDark,
+    fontFamily: FONTS.family.poppinsMedium,
+    fontSize: 12,
   },
   signInContainer: {
     flexDirection: 'row',

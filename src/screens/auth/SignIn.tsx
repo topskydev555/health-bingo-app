@@ -1,13 +1,20 @@
 import {
+  appleAuth,
+} from '@invertase/react-native-apple-authentication';
+import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AuthLogo, GoogleSignInButton } from '../../components/auth';
+import {
+  AppleSignInButton,
+  AuthLogo,
+  GoogleSignInButton,
+} from '../../components/auth';
 import { CustomButton, Input } from '../../components/common';
 import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID, SCREEN_NAMES } from '../../constants';
 import { useAuth, useToast } from '../../hooks';
@@ -18,7 +25,8 @@ export const SignInScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { signIn, loading, signInWithGoogle, error } = useAuth();
+  const { signIn, loading, signInWithGoogle, signInWithApple, error } =
+    useAuth();
   const { showToast } = useToast();
 
   const navigation =
@@ -70,6 +78,30 @@ export const SignInScreen: React.FC = () => {
         showToast('Play services not available', 'error');
       } else {
         showToast('Google Sign In failed', 'error');
+      }
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      const appleAuthRequestResponse = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+      });
+
+      const { identityToken, fullName, email } = appleAuthRequestResponse;
+
+      if (identityToken) {
+        await signInWithApple(identityToken, fullName, email);
+        navigation.navigate(SCREEN_NAMES.DASHBOARD as never);
+      } else {
+        showToast('Apple Sign In failed', 'error');
+      }
+    } catch (err: any) {
+      if (err.code === appleAuth.Error.CANCELED) {
+        showToast('Sign in was cancelled', 'info');
+      } else {
+        showToast('Apple Sign In failed', 'error');
       }
     }
   };
@@ -144,6 +176,10 @@ export const SignInScreen: React.FC = () => {
             disabled={loading}
             loading={loading}
           />
+
+          {Platform.OS === 'ios' && appleAuth.isSupported && (
+            <AppleSignInButton onPress={handleAppleSignIn} />
+          )}
 
           <View style={styles.createAccountContainer}>
             <Text style={styles.createAccountText}>

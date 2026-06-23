@@ -3,6 +3,7 @@ import {
   deleteAccount as deleteAccountService,
   sendVerificationCodeService,
   signInService,
+  signInWithAppleService,
   signInWithGoogleService,
   signUpService,
   verifyCodeService,
@@ -126,6 +127,42 @@ export const useAuth = () => {
     }
   };
 
+  const signInWithApple = async (
+    identityToken: string,
+    fullName?: { givenName?: string | null; familyName?: string | null } | null,
+    email?: string | null
+  ) => {
+    try {
+      setLoading(true);
+      const { data } = await signInWithAppleService(
+        identityToken,
+        fullName,
+        email
+      );
+
+      setToken(data.token);
+      setRefreshToken(data.refreshToken);
+      setUser({
+        email: data.user.email,
+        firstName: data.user.first_name,
+        lastName: data.user.last_name,
+        image: data.user.image,
+        id: data.user.id,
+        displayName: data.user.display_name,
+        timezone: data.user.timezone,
+        country: data.user.country,
+      });
+      setAuthenticated(true);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to sign in with Apple'
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signUp = async (
     firstName: string,
     lastName: string,
@@ -199,6 +236,7 @@ export const useAuth = () => {
       signIn,
       signUp,
       signInWithGoogle,
+      signInWithApple,
       verifyCode,
       sendVerificationCode,
       deleteAccount,
@@ -213,6 +251,7 @@ export const useAuth = () => {
       signIn,
       signUp,
       signInWithGoogle,
+      signInWithApple,
       verifyCode,
       sendVerificationCode,
       deleteAccount,

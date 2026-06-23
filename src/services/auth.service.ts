@@ -37,6 +37,37 @@ export const signInWithGoogleService = async (idToken: string) => {
   return data;
 };
 
+export const signInWithAppleService = async (
+  identityToken: string,
+  fullName?: { givenName?: string | null; familyName?: string | null } | null,
+  email?: string | null
+) => {
+  const response = await fetch(`${API_BASE_URL}/api/auth/apple`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      identityToken,
+      ...(fullName && {
+        fullName: {
+          givenName: fullName.givenName ?? '',
+          familyName: fullName.familyName ?? '',
+        },
+      }),
+      ...(email && { email }),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to sign in with Apple');
+  }
+
+  const data = await parseJsonSafe(response);
+  return data;
+};
+
 export const signUpService = async (
   firstName: string,
   lastName: string,
