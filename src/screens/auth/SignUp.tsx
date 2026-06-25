@@ -1,4 +1,3 @@
-import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useMemo, useState } from 'react';
@@ -18,6 +17,7 @@ import { SCREEN_NAMES } from '../../constants';
 import { useAuth, useToast } from '../../hooks';
 import { COLORS, FONTS } from '../../theme';
 import type { AuthStackParamList } from '../../types/navigation.type';
+import { isAppleCancel, requestAppleCredential } from '../../utils';
 
 export const SignUpScreen: React.FC = () => {
   const [firstName, setFirstName] = useState('');
@@ -76,21 +76,20 @@ export const SignUpScreen: React.FC = () => {
 
   const handleAppleSignIn = async () => {
     try {
-      const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
-      });
+      const credential = await requestAppleCredential();
 
-      const { identityToken, fullName, email } = appleAuthRequestResponse;
-
-      if (identityToken) {
-        await signInWithApple(identityToken, fullName, email);
+      if (credential) {
+        await signInWithApple(
+          credential.identityToken,
+          credential.fullName,
+          credential.email
+        );
         navigation.navigate(SCREEN_NAMES.DASHBOARD as never);
       } else {
         showToast('Apple Sign In failed', 'error');
       }
-    } catch (err: any) {
-      if (err.code === appleAuth.Error.CANCELED) {
+    } catch (err) {
+      if (isAppleCancel(err)) {
         showToast('Sign in was cancelled', 'info');
       } else {
         showToast('Apple Sign In failed', 'error');
@@ -186,16 +185,12 @@ export const SignUpScreen: React.FC = () => {
             loading={loading}
           />
 
-          {Platform.OS === 'ios' && appleAuth.isSupported && (
-            <>
-              <View style={styles.dividerContainer}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
-                <View style={styles.dividerLine} />
-              </View>
-              <AppleSignInButton onPress={handleAppleSignIn} />
-            </>
-          )}
+          <View style={styles.dividerContainer}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
+          </View>
+          <AppleSignInButton onPress={handleAppleSignIn} />
 
           <View style={styles.signInContainer}>
             <Text style={styles.signInText}>Already have an account? </Text>

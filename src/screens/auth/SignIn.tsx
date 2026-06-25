@@ -1,13 +1,10 @@
 import {
-  appleAuth,
-} from '@invertase/react-native-apple-authentication';
-import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
@@ -20,6 +17,7 @@ import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID, SCREEN_NAMES } from '../../
 import { useAuth, useToast } from '../../hooks';
 import { COLORS, FONTS } from '../../theme';
 import { AuthStackParamList } from '../../types';
+import { isAppleCancel, requestAppleCredential } from '../../utils';
 
 export const SignInScreen: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -84,21 +82,20 @@ export const SignInScreen: React.FC = () => {
 
   const handleAppleSignIn = async () => {
     try {
-      const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
-      });
+      const credential = await requestAppleCredential();
 
-      const { identityToken, fullName, email } = appleAuthRequestResponse;
-
-      if (identityToken) {
-        await signInWithApple(identityToken, fullName, email);
+      if (credential) {
+        await signInWithApple(
+          credential.identityToken,
+          credential.fullName,
+          credential.email
+        );
         navigation.navigate(SCREEN_NAMES.DASHBOARD as never);
       } else {
         showToast('Apple Sign In failed', 'error');
       }
-    } catch (err: any) {
-      if (err.code === appleAuth.Error.CANCELED) {
+    } catch (err) {
+      if (isAppleCancel(err)) {
         showToast('Sign in was cancelled', 'info');
       } else {
         showToast('Apple Sign In failed', 'error');
@@ -177,9 +174,7 @@ export const SignInScreen: React.FC = () => {
             loading={loading}
           />
 
-          {Platform.OS === 'ios' && appleAuth.isSupported && (
-            <AppleSignInButton onPress={handleAppleSignIn} />
-          )}
+          <AppleSignInButton onPress={handleAppleSignIn} />
 
           <View style={styles.createAccountContainer}>
             <Text style={styles.createAccountText}>
