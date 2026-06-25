@@ -5,6 +5,13 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+# Disable the New Architecture on iOS. Some native deps (e.g.
+# @invertase/react-native-apple-authentication) are legacy modules without
+# New-Arch codegen, and the TurboModule interop layer crashes on them
+# (EXC_BAD_ACCESS in performVoidMethodInvocation). Set here so plain
+# `pod install` keeps it off. Mirrors android/gradle.properties newArchEnabled.
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
