@@ -13,5 +13,15 @@ export const GOOGLE_WEB_CLIENT_ID =
 export const GOOGLE_IOS_CLIENT_ID =
   '178210706294-nm0nm7bof1ov4ubfhgv845ur8olufdg2.apps.googleusercontent.com';
 
+// Sign in with Apple — Android web-OAuth flow only (iOS uses the native bundle id).
+// APPLE_SERVICE_ID = the Apple "Services ID" configured for Sign in with Apple.
+// APPLE_REDIRECT_URI = an HTTPS endpoint you host that receives Apple's form_post
+// callback and 303-redirects it back so the in-app browser can read the result
+// (see healthbingo-web/functions/auth/apple/callback.js). Both must match the
+// values registered in the Apple Developer portal for the Services ID.
+export const APPLE_SERVICE_ID = 'com.healthbingo.signin';
+export const APPLE_REDIRECT_URI =
+  'https://healthbingo.com.au/auth/apple/callback';
+
 // Default Timezone
 export const DEFAULT_TIMEZONE = 'Australia/Sydney';

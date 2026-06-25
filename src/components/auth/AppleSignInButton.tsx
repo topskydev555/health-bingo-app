@@ -19,6 +19,7 @@ export const AppleSignInButton: React.FC<AppleSignInButtonProps> = ({
       <AppleButton
         buttonStyle={AppleButton.Style.BLACK}
         buttonType={AppleButton.Type.SIGN_IN}
+        cornerRadius={24}
         style={styles.iosButton}
         onPress={onPress}
       />
@@ -56,6 +57,11 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     height: 48,
     marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   androidIcon: {
     marginRight: 10,
