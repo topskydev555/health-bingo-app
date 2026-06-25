@@ -11,13 +11,12 @@ import {
   View,
 } from 'react-native';
 
-import { AppleSignInButton, AuthLogo } from '../../components/auth';
+import { AuthLogo } from '../../components/auth';
 import { CustomButton, Input } from '../../components/common';
 import { SCREEN_NAMES } from '../../constants';
 import { useAuth, useToast } from '../../hooks';
 import { COLORS, FONTS } from '../../theme';
 import type { AuthStackParamList } from '../../types/navigation.type';
-import { isAppleCancel, requestAppleCredential } from '../../utils';
 
 export const SignUpScreen: React.FC = () => {
   const [firstName, setFirstName] = useState('');
@@ -27,7 +26,7 @@ export const SignUpScreen: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
 
-  const { signUp, loading, signInWithApple } = useAuth();
+  const { signUp, loading } = useAuth();
   const { showToast } = useToast();
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
@@ -71,29 +70,6 @@ export const SignUpScreen: React.FC = () => {
         err instanceof Error ? err.message : 'Something went wrong',
         'error'
       );
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    try {
-      const credential = await requestAppleCredential();
-
-      if (credential) {
-        await signInWithApple(
-          credential.identityToken,
-          credential.fullName,
-          credential.email
-        );
-        navigation.navigate(SCREEN_NAMES.DASHBOARD as never);
-      } else {
-        showToast('Apple Sign In failed', 'error');
-      }
-    } catch (err) {
-      if (isAppleCancel(err)) {
-        showToast('Sign in was cancelled', 'info');
-      } else {
-        showToast('Apple Sign In failed', 'error');
-      }
     }
   };
 
@@ -185,12 +161,6 @@ export const SignUpScreen: React.FC = () => {
             loading={loading}
           />
 
-          <View style={styles.dividerContainer}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
-          <AppleSignInButton onPress={handleAppleSignIn} />
 
           <View style={styles.signInContainer}>
             <Text style={styles.signInText}>Already have an account? </Text>
@@ -288,22 +258,6 @@ const styles = StyleSheet.create({
   },
   buttonTextStyle: {
     fontSize: 14,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 8,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.gray.mediumDark,
-  },
-  dividerText: {
-    marginHorizontal: 6,
-    color: COLORS.gray.mediumDark,
-    fontFamily: FONTS.family.poppinsMedium,
-    fontSize: 12,
   },
   signInContainer: {
     flexDirection: 'row',
