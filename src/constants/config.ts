@@ -23,5 +23,15 @@ export const APPLE_SERVICE_ID = 'com.healthbingo.signin';
 export const APPLE_REDIRECT_URI =
   'https://healthbingo.com.au/auth/apple/callback';
 
+// Apple In-App Purchase product IDs (iOS only). Must match the consumable
+// products configured in App Store Connect and the backend's APPLE_PRODUCT_IDS.
+// Android continues to use Stripe.
+export const APPLE_IAP_PRODUCT_IDS: Record<string, string> = {
+  premium: 'com.healthbingo.app.challenge.premium',
+  pro: 'com.healthbingo.app.challenge.pro',
+};
+export const APPLE_IAP_UPGRADE_PRODUCT_ID =
+  'com.healthbingo.app.challenge.upgrade_pro';
+
 // Default Timezone
 export const DEFAULT_TIMEZONE = 'Australia/Sydney';

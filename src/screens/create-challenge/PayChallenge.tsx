@@ -12,12 +12,19 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { CustomButton } from '../../components/common';
 import { DashboardHeader } from '../../components/dashboard';
-import { SCREEN_NAMES } from '../../constants/screens';
+import {
+  APPLE_IAP_PRODUCT_IDS,
+  SCREEN_NAMES,
+} from '../../constants';
 import { usePlans, useToast } from '../../hooks';
 import {
+  completePurchase,
   confirmPayment,
+  initIapConnection,
   payWithPromoCode,
+  purchaseProduct,
   validatePromoCode,
+  verifyApplePayment,
 } from '../../services';
 import { COLORS, FONTS } from '../../theme';
 import { CreateChallengeStackParamList } from '../../types/navigation.type';
@@ -76,9 +83,6 @@ export const PayChallenge: React.FC = () => {
       defaultBillingDetails: {
         name: 'Challenge Payment',
       },
-      applePay: {
-        merchantCountryCode: 'AU',
-      },
       googlePay: {
         merchantCountryCode: 'AU',
         testEnv: __DEV__,
@@ -97,6 +101,41 @@ export const PayChallenge: React.FC = () => {
 
     console.log('Payment sheet initialized successfully');
     return true;
+  };
+
+  const handleApplePurchase = async () => {
+    const productId = APPLE_IAP_PRODUCT_IDS[challenge.plan as string];
+    if (!productId) {
+      showToast('This plan is not available for purchase', 'error');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      await initIapConnection();
+      const purchase = await purchaseProduct(productId);
+
+      const receipt = purchase.transactionReceipt;
+      if (!receipt) {
+        showToast('No purchase receipt received', 'error');
+        return;
+      }
+
+      const result = await verifyApplePayment(challenge.id, receipt);
+      if (result.success) {
+        await completePurchase(purchase);
+        showToast('Payment successful!', 'success');
+        navigation.navigate(SCREEN_NAMES.DASHBOARD as never);
+      } else {
+        showToast(result.error || 'Payment verification failed', 'error');
+      }
+    } catch (error: any) {
+      if (error?.code !== 'E_USER_CANCELLED') {
+        showToast('Payment failed. Please try again.', 'error');
+      }
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   const handlePayNow = async () => {
@@ -122,8 +161,11 @@ export const PayChallenge: React.FC = () => {
       } finally {
         setIsProcessingPayment(false);
       }
+    } else if (Platform.OS === 'ios') {
+      // iOS uses Apple In-App Purchase (StoreKit) instead of Stripe.
+      await handleApplePurchase();
     } else {
-      // Pay with Stripe
+      // Pay with Stripe (Android)
       setIsProcessingPayment(true);
 
       try {

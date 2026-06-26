@@ -1,10 +1,23 @@
 import { usePaymentSheet } from '@stripe/stripe-react-native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import { APPLE_IAP_UPGRADE_PRODUCT_ID } from '../../constants';
 import { useToast } from '../../hooks';
 
+import {
+  completePurchase,
+  initIapConnection,
+  purchaseProduct,
+  verifyApplePayment,
+} from '../../services';
 import {
   confirmChallengeUpgrade,
   upgradeChallengeToPro,
@@ -41,7 +54,6 @@ export const UpgradeToProModal: React.FC<UpgradeToProModalProps> = ({
       paymentIntentClientSecret: clientSecret,
       allowsDelayedPaymentMethods: true,
       defaultBillingDetails: { name: 'Plan Upgrade' },
-      applePay: { merchantCountryCode: 'AU' },
       googlePay: {
         merchantCountryCode: 'AU',
         testEnv: __DEV__,
@@ -61,6 +73,36 @@ export const UpgradeToProModal: React.FC<UpgradeToProModalProps> = ({
 
     setIsProcessing(true);
     try {
+      if (Platform.OS === 'ios') {
+        // iOS upgrades via Apple In-App Purchase (the upgrade product).
+        await initIapConnection();
+        const purchase = await purchaseProduct(APPLE_IAP_UPGRADE_PRODUCT_ID);
+
+        const receipt = purchase.transactionReceipt;
+        if (!receipt) {
+          showToast('No purchase receipt received', 'error');
+          setIsProcessing(false);
+          return;
+        }
+
+        const appleResult = await verifyApplePayment(
+          selectedChallenge.id,
+          receipt
+        );
+
+        if (appleResult.success) {
+          await completePurchase(purchase);
+          showToast('Upgraded to Pro!', 'success');
+          await fetchChallenges();
+          selectChallenge(selectedChallenge.id);
+          onUpgradeSuccess();
+        } else {
+          showToast(appleResult.error || 'Upgrade verification failed', 'error');
+        }
+        setIsProcessing(false);
+        return;
+      }
+
       const { payment_intent_id, client_secret } = await upgradeChallengeToPro(
         selectedChallenge.id
       );
@@ -93,7 +135,10 @@ export const UpgradeToProModal: React.FC<UpgradeToProModalProps> = ({
       } else {
         showToast(result.error || 'Upgrade confirmation failed', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.code === 'E_USER_CANCELLED') {
+        return;
+      }
       console.error('Upgrade error:', error);
       onClose();
       showToast('An error occurred during upgrade', 'error');

@@ -58,6 +58,24 @@ export const getClientSecret = async (
   }
 };
 
+export const verifyApplePayment = async (
+  challengeId: string,
+  receipt: string
+): Promise<{ success: boolean; data?: any; error?: string }> => {
+  try {
+    const response = await apiFetch('/api/payment/apple/verify', 'POST', {
+      challenge_id: challengeId,
+      receipt,
+    });
+    return { success: true, data: response };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Failed to verify Apple payment',
+    };
+  }
+};
+
 export const getPaymentPlans = async (): Promise<{
   success: boolean;
   data?: any;
